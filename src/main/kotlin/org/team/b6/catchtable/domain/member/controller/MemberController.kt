@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*
 import org.team.b6.catchtable.domain.member.dto.response.MemberResponse
 import org.team.b6.catchtable.domain.member.service.MemberService
 
+@RestController
 @RequestMapping("/members")
 class MemberController(
     val memberService: MemberService
