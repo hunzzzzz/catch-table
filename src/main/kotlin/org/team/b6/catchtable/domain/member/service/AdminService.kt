@@ -3,6 +3,7 @@ package org.team.b6.catchtable.domain.member.service
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.team.b6.catchtable.domain.member.dto.response.AdminResponse
 import org.team.b6.catchtable.domain.store.model.StoreRequirementCategory
 import org.team.b6.catchtable.domain.store.repository.StoreRequirementRepository
 import org.team.b6.catchtable.domain.store.service.StoreService
@@ -14,7 +15,7 @@ class AdminService(
     private val storeRequirementRepository: StoreRequirementRepository
 ) {
     fun findAllStoreRequirements() =
-        storeRequirementRepository.findAll().filter { !it.isAccepted }
+        storeRequirementRepository.findAll().filter { !it.isAccepted }.map { AdminResponse.from(it) }
 
     fun acceptStoreRequirement(storeRequirementId: Long) {
         getStoreRequirement(storeRequirementId)
