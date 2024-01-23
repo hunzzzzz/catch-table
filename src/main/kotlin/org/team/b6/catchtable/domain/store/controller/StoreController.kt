@@ -31,9 +31,4 @@ class StoreController(
         ResponseEntity.ok().body(
             storeService.findAllStoresByCategoryWithSortCriteria(category, direction, criteria)
         )
-
-    @PostMapping("")
-    fun register(@RequestBody storeRequest: StoreRequest): Store {
-        return storeService.register(storeRequest)
-    }
 }

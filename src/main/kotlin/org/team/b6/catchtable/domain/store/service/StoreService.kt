@@ -13,8 +13,6 @@ import org.team.b6.catchtable.domain.store.repository.StoreRepository
 class StoreService(
     private val storeRepository: StoreRepository
 ) {
-    fun register(request: StoreRequest) = storeRepository.save(request.to())
-
     fun findAllStoresByCategory(category: String) =
         storeRepository.findAllByCategory(
             category = getCategory(category)
