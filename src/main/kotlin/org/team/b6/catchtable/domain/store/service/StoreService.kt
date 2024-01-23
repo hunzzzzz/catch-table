@@ -3,7 +3,6 @@ package org.team.b6.catchtable.domain.store.service
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
 import org.team.b6.catchtable.domain.store.model.StoreCategory
 import org.team.b6.catchtable.domain.store.repository.StoreRepository
