@@ -23,11 +23,6 @@ data class StoreRequest(
 
     fun to(requirement: StoreRequirementCategory, store: Store?) = StoreRequirement(
         requirement = requirement,
-        name = name,
-        category = StoreCategory.valueOf(category),
-        description = description,
-        phone = phone,
-        address = address,
         store = store,
         createdAt = LocalDateTime.now()
     )

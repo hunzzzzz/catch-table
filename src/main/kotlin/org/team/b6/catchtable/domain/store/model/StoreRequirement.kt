@@ -13,22 +13,6 @@ class StoreRequirement(
     @Column(name = "is_accepted", nullable = false)
     var isAccepted: Boolean = false,
 
-    @Column(name = "name", nullable = false)
-    val name: String? = null,
-
-    @Column(name = "category", nullable = false)
-    @Enumerated(EnumType.STRING)
-    val category: StoreCategory? = null,
-
-    @Column(name = "description", nullable = false)
-    val description: String? = null,
-
-    @Column(name = "phone", nullable = false)
-    val phone: String? = null,
-
-    @Column(name = "address", nullable = false)
-    val address: String? = null,
-
     @ManyToOne
     @JoinColumn(name = "store_id")
     val store: Store?,

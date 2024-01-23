@@ -20,7 +20,7 @@ class StoreRequirementService(
         storeRequirementRepository.save(
             storeRequest.to(
                 requirement = StoreRequirementCategory.CREATE,
-                store = null
+                store = storeRequest.to(),
             )
         )
     }
