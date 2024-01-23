@@ -5,10 +5,10 @@ import org.team.b6.catchtable.domain.store.model.StoreCategory
 
 data class StoreRequest(
     val name: String,
-    val category: StoreCategory,
+    val category: String,
     val description: String,
     val phone: String,
     val address: String
 ) {
-    fun to() = Store(name, category, description, phone, address)
+    fun to() = Store(name, StoreCategory.valueOf(category), description, phone, address)
 }
