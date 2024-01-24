@@ -10,6 +10,7 @@ import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.model.StoreCategory
 import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.InvalidStoreSearchingValuesException
+import org.team.b6.catchtable.global.variable.Variables
 
 @Service
 @Transactional
@@ -48,7 +49,7 @@ class StoreService(
             ?: throw InvalidStoreSearchingValuesException("category")
 
     private fun getCriteria(criteria: String) =
-        arrayListOf("name").firstOrNull { it == criteria } // TODO: 정렬 조건 추후 추가
+        Variables.CRITERIA_LIST.firstOrNull { it == criteria }
             ?: throw InvalidStoreSearchingValuesException("criteria")
 
     private fun getStore(storeId: Long) =
