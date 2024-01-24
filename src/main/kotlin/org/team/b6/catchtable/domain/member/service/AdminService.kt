@@ -1,71 +1,52 @@
 package org.team.b6.catchtable.domain.member.service
 
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
-import org.team.b6.catchtable.domain.member.dto.response.AdminResponse
-import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
-import org.team.b6.catchtable.domain.store.model.StoreRequirementCategory
-import org.team.b6.catchtable.domain.store.repository.StoreRequirementRepository
-import org.team.b6.catchtable.domain.store.service.StoreService
-import org.team.b6.catchtable.global.variable.Variables
+import org.springframework.transaction.annotation.Transactional
+import org.team.b6.catchtable.domain.store.model.StoreStatus
+import org.team.b6.catchtable.domain.store.repository.StoreRepository
 
 @Service
+@Transactional
 class AdminService(
-    private val storeService: StoreService,
-    private val storeRequirementRepository: StoreRequirementRepository,
+    private val storeRepository: StoreRepository,
     private val javaMailSender: JavaMailSender
 ) {
     fun findAllStoreRequirements() =
-        storeRequirementRepository.findAll().filter { !it.isAccepted }.map { AdminResponse.from(it) }
+        storeRepository.findAll()
+            .filter { unavailableToOrder(it.status) }
 
-    fun acceptStoreRequirement(storeRequirementId: Long) {
-        getStoreRequirement(storeRequirementId)
-            .let {
-                when (it.requirement) {
-                    StoreRequirementCategory.CREATE -> storeService.registerStore(it.store!!)
-
-                    StoreRequirementCategory.UPDATE -> storeService.updateStore(
-                        storeId = it.requireOf!!,
-                        request = StoreRequest(
-                            it.store!!.name,
-                            it.store.category.name,
-                            it.store.description,
-                            it.store.phone,
-                            it.store.address
-                        )
-                    )
-
-                    StoreRequirementCategory.DELETE -> storeService.deleteStore(it.requireOf!!)
-                }
-                it.isAccepted = true
-            }.run {
-                // TODO : 메일 전송 로직 추가
-//                deleteStoreRequirement(storeRequirementId)
+    fun accept(storeId: Long) {
+        getStore(storeId).let {
+            when (it.status) {
+                StoreStatus.WAITING_FOR_CREATE -> it.updateStatus(StoreStatus.OK)
+                StoreStatus.WAITING_FOR_DELETE -> it.updateForDelete()
+                else -> ""
             }
-    }
-
-    private fun deleteStoreRequirement(storeChangeId: Long) =
-        storeRequirementRepository.deleteById(storeChangeId)
-
-    private fun getStoreRequirement(storeChangeId: Long) =
-        storeRequirementRepository.findByIdOrNull(storeChangeId) ?: throw Exception("") // TODO : 추후 구현
-
-    private fun sendMail(email: String, requirement: StoreRequirementCategory, isAccepted: Boolean) {
-        SimpleMailMessage().let {
-            it.replyTo = email
-            it.subject = Variables.MAIL_SUBJECT
-
-            if (isAccepted) {
-                when (requirement) {
-                    StoreRequirementCategory.CREATE -> it.text = Variables.MAIL_CONTENT_STORE_CREATE_ACCEPTED
-                    StoreRequirementCategory.UPDATE -> it.text = Variables.MAIL_CONTENT_STORE_UPDATE_ACCEPTED
-                    StoreRequirementCategory.DELETE -> it.text = Variables.MAIL_CONTENT_STORE_DELETE_ACCEPTED
-                }
-            }
-
-            javaMailSender.send(it)
         }
     }
+
+    private fun getStore(storeId: Long) =
+        (storeRepository.findByIdOrNull(storeId) ?: throw Exception("")) // TODO : ModelNotFoundException
+
+//    private fun sendMail(email: String, requirement: StoreRequirementCategory, isAccepted: Boolean) {
+//        SimpleMailMessage().let {
+//            it.replyTo = email
+//            it.subject = Variables.MAIL_SUBJECT
+//
+//            if (isAccepted) {
+//                when (requirement) {
+//                    StoreRequirementCategory.CREATE -> it.text = Variables.MAIL_CONTENT_STORE_CREATE_ACCEPTED
+//                    StoreRequirementCategory.UPDATE -> it.text = Variables.MAIL_CONTENT_STORE_UPDATE_ACCEPTED
+//                    StoreRequirementCategory.DELETE -> it.text = Variables.MAIL_CONTENT_STORE_DELETE_ACCEPTED
+//                }
+//            }
+//
+//            javaMailSender.send(it)
+//        }
+//    }
+
+    private fun unavailableToOrder(status: StoreStatus) =
+        (status == StoreStatus.WAITING_FOR_CREATE) || (status == StoreStatus.WAITING_FOR_DELETE)
 }
