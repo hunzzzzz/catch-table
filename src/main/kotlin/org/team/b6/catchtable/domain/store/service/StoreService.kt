@@ -4,8 +4,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.team.b6.catchtable.domain.store.dto.request.CreateStoreRequest
-import org.team.b6.catchtable.domain.store.dto.request.UpdateStoreRequest
+import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
 import org.team.b6.catchtable.domain.store.model.StoreCategory
 import org.team.b6.catchtable.domain.store.repository.StoreRepository
@@ -34,11 +33,11 @@ class StoreService(
         StoreResponse.from(getStore(storeId))
 
     // 식당 등록
-    fun createStore(request: CreateStoreRequest) =
+    fun createStore(request: StoreRequest) =
         StoreResponse.from(storeRepository.save(request.to()))
 
     // 식당 수정
-    fun updateStore(storeId: Long, request: UpdateStoreRequest) =
+    fun updateStore(storeId: Long, request: StoreRequest) =
         getStore(storeId).update(request)
 
     // 식당 제거

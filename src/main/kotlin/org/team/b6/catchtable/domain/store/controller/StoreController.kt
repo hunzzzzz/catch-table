@@ -4,10 +4,9 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.service.StoreRequirementService
 import org.team.b6.catchtable.domain.store.service.StoreService
-import org.team.b6.catchtable.domain.store.dto.request.CreateStoreRequest
-import org.team.b6.catchtable.domain.store.dto.request.UpdateStoreRequest
 import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
 
 @RestController
@@ -38,15 +37,16 @@ class StoreController(
     }
 
     @PostMapping
-    fun createStore(@RequestBody createStoreRequest: CreateStoreRequest): ResponseEntity<StoreResponse> {
+    fun createStore(@RequestBody createStoreRequest: StoreRequest): ResponseEntity<StoreResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(storeService.createStore(createStoreRequest))
     }
+
     @PutMapping("/{storeId}")
     fun updateStore(
         @PathVariable storeId: Long,
-        @RequestBody updateStoreRequest: UpdateStoreRequest
+        @RequestBody updateStoreRequest: StoreRequest
     ): ResponseEntity<Unit> {
         storeService.updateStore(storeId, updateStoreRequest)
         return ResponseEntity.ok().build()
