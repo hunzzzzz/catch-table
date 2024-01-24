@@ -1,7 +1,7 @@
 package org.team.b6.catchtable.domain.store.model
 
 import jakarta.persistence.*
-import org.team.b6.catchtable.domain.store.dto.request.UpdateStoreRequest
+import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.global.entity.BaseEntity
 
 @Entity
@@ -28,7 +28,7 @@ class Store(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    fun update(request: UpdateStoreRequest) {
+    fun update(request: StoreRequest) {
         this.name = request.name
         this.category = StoreCategory.valueOf(request.category)
         this.description = request.description
