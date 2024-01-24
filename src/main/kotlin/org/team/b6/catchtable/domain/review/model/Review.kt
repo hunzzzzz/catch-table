@@ -9,10 +9,10 @@ import org.team.b6.catchtable.global.entity.BaseEntity
 @Table(name = "Reviews")
 class Review(
     @Column(name = "content", nullable = false)
-    val content: String,
+    var content: String,
 
     @Column(name = "ratings", nullable = false)
-    val ratings: Int,
+    var ratings: Int,
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -26,4 +26,10 @@ class Review(
     @Column(name = "review_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    fun update(content: String,ratings: Int){
+        this.content = content
+        this.ratings = ratings
+    }
 }
+

@@ -7,23 +7,32 @@ import org.team.b6.catchtable.global.entity.BaseEntity
 @Table(name = "Stores")
 class Store(
     @Column(name = "name", nullable = false)
-    val name: String,
+    var name: String,
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
-    val category: StoreCategory,
+    var category: StoreCategory,
 
     @Column(name = "description", nullable = false)
-    val description: String,
+    var description: String,
 
     @Column(name = "phone", nullable = false)
-    val phone: String,
+    var phone: String,
 
     @Column(name = "address", nullable = false)
-    val address: String
+    var address: String
 ) : BaseEntity() {
     @Id
     @Column(name = "store_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    fun update(name: String, category: StoreCategory, description: String, phone: String, address: String) {
+        // this = 객체 자신을 의미!! (여기서 this는 (기존의) store 객체를 의미한다.)
+        this.name = name
+        this.category = category
+        this.description = description
+        this.phone = phone
+        this.address = address
+    }
 }
