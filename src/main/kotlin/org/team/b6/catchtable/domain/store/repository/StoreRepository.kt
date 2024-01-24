@@ -8,6 +8,12 @@ import org.team.b6.catchtable.domain.store.model.StoreCategory
 
 @Repository
 interface StoreRepository : JpaRepository<Store, Long> {
+
     fun findAllByCategory(category: StoreCategory): List<Store>
+
     fun findAllByCategory(category: StoreCategory, sort: Sort): List<Store>
+
+    fun existByAddress(address: String): Boolean
+
+    fun existByName(name: String): Boolean
 }

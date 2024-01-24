@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
+import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.model.StoreCategory
 import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.InvalidStoreSearchingValuesException
@@ -33,12 +34,18 @@ class StoreService(
         StoreResponse.from(getStore(storeId))
 
     // 식당 등록
-    fun createStore(request: StoreRequest) =
-        StoreResponse.from(storeRepository.save(request.to()))
+    fun createStore(request: StoreRequest): StoreResponse {
+        validateName(request.name)
+        validateAddress(request.address)
+        return StoreResponse.from(storeRepository.save(request.to()))
+    }
 
     // 식당 수정
-    fun updateStore(storeId: Long, request: StoreRequest) =
-        getStore(storeId).update(request)
+    fun updateStore(storeId: Long, request: StoreRequest) {
+        validateName(request.name)
+        validateAddress(request.address)
+        return getStore(storeId).update(request)
+    }
 
     // 식당 제거
     fun deleteStore(storeId: Long) = storeRepository.deleteById(storeId)
@@ -54,4 +61,12 @@ class StoreService(
 
     private fun getStore(storeId: Long) =
         storeRepository.findByIdOrNull(storeId) ?: throw Exception("") // TODO: 추후 반영
+
+    private fun validateName(name: String) {
+        if (storeRepository.existByName(name)) throw Exception(message = "이미 존재 하는 이름 입니다.")
+    }
+
+    private fun validateAddress(address: String) {
+        if (storeRepository.existByAddress(address)) throw Exception(message = "이미 존재 하는 주소 입니다.")
+    }
 }
