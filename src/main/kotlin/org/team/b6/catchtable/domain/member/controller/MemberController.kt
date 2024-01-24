@@ -1,5 +1,6 @@
 package org.team.b6.catchtable.domain.member.controller
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -16,7 +17,7 @@ class MemberController(
 ) {
 
     @PostMapping("/signup")
-    fun signup(@RequestBody signupMemberRequest: SignupMemberRequest): ResponseEntity<MemberResponse>{
+    fun signup(@Valid @RequestBody signupMemberRequest: SignupMemberRequest): ResponseEntity<MemberResponse>{
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(memberService.signUp(signupMemberRequest))

@@ -1,6 +1,7 @@
 package org.team.b6.catchtable.global.exception
 
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -19,4 +20,35 @@ class GlobalExceptionHandler(
                 path = httpServletRequest.requestURI
             )
         )
+
+    @ExceptionHandler(ModelNotFoundException::class)
+    fun handleModelNotFoundException(e: ModelNotFoundException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ErrorResponse(
+                httpStatus = "404 Not Found",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+    }
+    @ExceptionHandler(IllegalStateException::class)
+    fun handleAlreadyAppliedException(e: IllegalStateException) =
+        ResponseEntity.status(HttpStatus.CONFLICT).body(
+            ErrorResponse(
+                httpStatus = "409 Conflict",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
 }

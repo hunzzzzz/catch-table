@@ -15,7 +15,10 @@ class StoreRequirement(
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "store_id")
-    val store: Store?,
+    val store: Store? = null,
+
+    @Column(name = "require_to")
+    val requireOf: Long? = null,
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP(6)", nullable = false, updatable = false)
     val createdAt: LocalDateTime
