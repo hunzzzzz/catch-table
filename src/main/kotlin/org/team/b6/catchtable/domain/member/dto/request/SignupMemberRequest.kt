@@ -4,12 +4,11 @@ import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.member.model.MemberRole
 
 data class SignupMemberRequest(
-    val role: MemberRole,
+    val role: String?,
     val nickname: String,
     val name: String,
     val email: String,
     val password: String,
-)
-{
-    fun to()= Member(role,nickname,name,email,password)
+) {
+    //fun to() = Member(MemberRole.valueOf(role), nickname, name, email, password)
 }
