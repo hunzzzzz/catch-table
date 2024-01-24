@@ -2,9 +2,6 @@ package org.team.b6.catchtable.domain.store.dto.request
 
 import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.model.StoreCategory
-import org.team.b6.catchtable.domain.store.model.StoreRequirement
-import org.team.b6.catchtable.domain.store.model.StoreRequirementCategory
-import java.time.LocalDateTime
 
 data class StoreRequest(
     val name: String,
@@ -20,12 +17,4 @@ data class StoreRequest(
         phone = phone,
         address = address
     )
-
-    fun to(requirement: StoreRequirementCategory, store: Store? = null, requireOf: Long? = null) =
-        StoreRequirement(
-            requirement = requirement,
-            store = store,
-            requireOf = requireOf,
-            createdAt = LocalDateTime.now()
-        )
 }
