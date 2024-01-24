@@ -13,7 +13,7 @@ class StoreRequirement(
     @Column(name = "is_accepted", nullable = false)
     var isAccepted: Boolean = false,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "store_id")
     val store: Store?,
 
