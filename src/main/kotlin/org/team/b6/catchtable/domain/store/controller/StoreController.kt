@@ -29,12 +29,9 @@ class StoreController(
             storeService.findAllStoresByCategoryWithSortCriteria(category, direction, criteria)
         )
 
-    @GetMapping("/{storeId}")
-    fun getStore(@PathVariable storeId: Long): ResponseEntity<StoreResponse> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(storeService.findStore(storeId))
-    }
+    @GetMapping("/store/{storeId}")
+    fun findStore(@PathVariable storeId: Long) =
+        ResponseEntity.ok().body(storeService.findStore(storeId))
 
     @PostMapping
     fun registerStore(@RequestBody request: StoreRequest): ResponseEntity<Unit> {
