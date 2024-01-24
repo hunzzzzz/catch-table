@@ -30,8 +30,8 @@ class SwaggerConfig {
             )
             .info(
                 Info()
-                    .title("Course API")
-                    .description("Course API schema")
+                    .title("Catch Table API")
+                    .description("Catch Table API schema")
                     .version("1.0.0")
             )
     }
