@@ -12,8 +12,7 @@ data class MemberResponse(
     val email: String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.mm.dd", timezone = "Asia/Seoul")
     val createAt: LocalDateTime
-)
-{
+) {
     companion object {
         fun from(member: Member) = MemberResponse(
             role = member.role,
