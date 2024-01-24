@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.team.b6.catchtable.domain.member.dto.response.AdminResponse
+import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.model.StoreRequirementCategory
 import org.team.b6.catchtable.domain.store.repository.StoreRequirementRepository
 import org.team.b6.catchtable.domain.store.service.StoreService
@@ -21,9 +22,20 @@ class AdminService(
         getStoreRequirement(storeRequirementId)
             .let {
                 when (it.requirement) {
-                    StoreRequirementCategory.CREATE -> TODO()
-                    StoreRequirementCategory.UPDATE -> TODO()
-                    StoreRequirementCategory.DELETE -> TODO()
+                    StoreRequirementCategory.CREATE -> storeService.registerStore(it.store!!)
+
+                    StoreRequirementCategory.UPDATE -> storeService.updateStore(
+                        storeId = it.requireTo!!,
+                        request = StoreRequest(
+                            it.store!!.name,
+                            it.store.category.name,
+                            it.store.description,
+                            it.store.phone,
+                            it.store.address
+                        )
+                    )
+
+                    StoreRequirementCategory.DELETE -> storeService.deleteStore(it.requireTo!!)
                 }
             }.run { deleteStoreRequirement(storeRequirementId) }
     }

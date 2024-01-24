@@ -37,10 +37,9 @@ class StoreController(
     }
 
     @PostMapping
-    fun createStore(@RequestBody createStoreRequest: StoreRequest): ResponseEntity<StoreResponse> {
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(storeService.createStore(createStoreRequest))
+    fun registerStore(@RequestBody request: StoreRequest): ResponseEntity<Unit> {
+        storeRequirementService.applyForRegister(request)
+        return ResponseEntity.ok().build()
     }
 
     @PutMapping("/{storeId}")
@@ -48,7 +47,7 @@ class StoreController(
         @PathVariable storeId: Long,
         @RequestBody updateStoreRequest: StoreRequest
     ): ResponseEntity<Unit> {
-        storeService.updateStore(storeId, updateStoreRequest)
+        storeRequirementService.applyForUpdate(storeId, updateStoreRequest)
         return ResponseEntity.ok().build()
     }
 
@@ -56,7 +55,7 @@ class StoreController(
     fun deleteStore(
         @PathVariable storeId: Long
     ): ResponseEntity<Unit> {
-        storeService.deleteStore(storeId)
+        storeRequirementService.applyForDelete(storeId)
         return ResponseEntity.noContent().build()
     }
 }
