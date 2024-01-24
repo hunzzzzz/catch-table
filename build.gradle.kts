@@ -27,13 +27,15 @@ dependencies {
     // DB
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("com.h2database:h2")
+    // MAIL
+    implementation("org.springframework.boot:spring-boot-starter-mail:3.2.2")
     // REFLECTION
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     // SECURITY
-//	implementation("org.springframework.boot:spring-boot-starter-security")
-//	implementation("io.jsonwebtoken:jjwt-api:0.12.3")
-//	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
-//	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
     // SWAGGER
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     // TEST
