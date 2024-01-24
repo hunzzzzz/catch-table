@@ -21,11 +21,11 @@ data class StoreRequest(
         address = address
     )
 
-    fun to(requirement: StoreRequirementCategory, store: Store? = null, requireTo: Long? = null) =
+    fun to(requirement: StoreRequirementCategory, store: Store? = null, requireOf: Long? = null) =
         StoreRequirement(
             requirement = requirement,
             store = store,
-            requireTo = requireTo,
+            requireOf = requireOf,
             createdAt = LocalDateTime.now()
         )
 }

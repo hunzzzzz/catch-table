@@ -18,7 +18,7 @@ class StoreRequirement(
     val store: Store? = null,
 
     @Column(name = "require_to")
-    val requireTo: Long? = null, // UPDATE, DELETE 시 대상이 되는 Store의 Id (FK가 아님을 구분하기 위해 requireTo라는 컬럼명 사용)
+    val requireOf: Long? = null,
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP(6)", nullable = false, updatable = false)
     val createdAt: LocalDateTime

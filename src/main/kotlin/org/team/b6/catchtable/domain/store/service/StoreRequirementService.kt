@@ -26,7 +26,7 @@ class StoreRequirementService(
             storeRequest.to(
                 requirement = StoreRequirementCategory.UPDATE,
                 store = storeRequest.to(),
-                requireTo = storeId
+                requireOf = storeId
             )
         )
 
@@ -34,7 +34,7 @@ class StoreRequirementService(
         storeRequirementRepository.save(
             StoreRequirement(
                 requirement = StoreRequirementCategory.DELETE,
-                requireTo = storeId,
+                requireOf = storeId,
                 createdAt = LocalDateTime.now()
             )
         )

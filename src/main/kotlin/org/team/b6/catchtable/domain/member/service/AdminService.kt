@@ -9,11 +9,13 @@ import org.team.b6.catchtable.domain.member.dto.response.AdminResponse
 import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.model.StoreRequirementCategory
 import org.team.b6.catchtable.domain.store.repository.StoreRequirementRepository
+import org.team.b6.catchtable.domain.store.service.StoreService
 import org.team.b6.catchtable.global.variable.Strings
 
 @Service
 @Transactional
 class AdminService(
+    private val storeService: StoreService,
     private val storeRequirementRepository: StoreRequirementRepository,
     private val javaMailSender: JavaMailSender
 ) {
@@ -27,7 +29,7 @@ class AdminService(
                     StoreRequirementCategory.CREATE -> storeService.registerStore(it.store!!)
 
                     StoreRequirementCategory.UPDATE -> storeService.updateStore(
-                        storeId = it.requireTo!!,
+                        storeId = it.requireOf!!,
                         request = StoreRequest(
                             it.store!!.name,
                             it.store.category.name,
@@ -37,7 +39,7 @@ class AdminService(
                         )
                     )
 
-                    StoreRequirementCategory.DELETE -> storeService.deleteStore(it.requireTo!!)
+                    StoreRequirementCategory.DELETE -> storeService.deleteStore(it.requireOf!!)
                 }
             }.run {
                 // TODO : 메일 전송 로직 추가
