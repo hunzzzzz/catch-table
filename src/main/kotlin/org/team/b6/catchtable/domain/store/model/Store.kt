@@ -1,6 +1,7 @@
 package org.team.b6.catchtable.domain.store.model
 
 import jakarta.persistence.*
+import org.team.b6.catchtable.domain.store.dto.request.UpdateStoreRequest
 import org.team.b6.catchtable.global.entity.BaseEntity
 
 @Entity
@@ -27,12 +28,11 @@ class Store(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    fun update(name: String, category: StoreCategory, description: String, phone: String, address: String) {
-        // this = 객체 자신을 의미!! (여기서 this는 (기존의) store 객체를 의미한다.)
-        this.name = name
-        this.category = category
-        this.description = description
-        this.phone = phone
-        this.address = address
+    fun update(request: UpdateStoreRequest) {
+        this.name = request.name
+        this.category = StoreCategory.valueOf(request.category)
+        this.description = request.description
+        this.phone = request.phone
+        this.address = request.address
     }
 }
