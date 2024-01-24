@@ -6,5 +6,7 @@ import org.team.b6.catchtable.domain.member.model.Member
 
 
 interface MemberRepository : JpaRepository<Member,Long> {
+    fun existsByEmail(email: String): Boolean
+    fun existsByNickname(nickname: String): Boolean
     fun findByEmail(email: String): Member?
 }
