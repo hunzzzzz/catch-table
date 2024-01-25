@@ -10,7 +10,8 @@ data class StoreRequest(
     val phone: String,
     val address: String
 ) {
-    fun to() = Store(
+    fun to(ownerId: Long) = Store(
+        belongTo = ownerId,
         name = name,
         category = StoreCategory.valueOf(category),
         description = description,

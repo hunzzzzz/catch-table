@@ -12,6 +12,7 @@ import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.DuplicatedValueException
 import org.team.b6.catchtable.global.exception.InvalidStoreSearchingValuesException
 import org.team.b6.catchtable.global.exception.ModelNotFoundException
+import org.team.b6.catchtable.global.security.MemberPrincipal
 import org.team.b6.catchtable.global.variable.Variables
 
 @Service
@@ -38,9 +39,9 @@ class StoreService(
     fun findStore(storeId: Long) = StoreResponse.from(getStore(storeId))
 
     // 식당 등록
-    fun registerStore(request: StoreRequest) =
+    fun registerStore(memberPrincipal: MemberPrincipal, request: StoreRequest) =
         validateNameAndAddress(request.name, request.address)
-            .run { storeRepository.save(request.to()).id!! }
+            .run { storeRepository.save(request.to(memberPrincipal.id)).id!! }
 
     // 식당 수정
     fun updateStore(storeId: Long, request: StoreRequest) =
