@@ -1,56 +1,51 @@
 package org.team.b6.catchtable.domain.review.controller
 
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.team.b6.catchtable.domain.review.dto.request.CreateReviewRequest
-import org.team.b6.catchtable.domain.review.dto.request.DeleteReviewRequest
-import org.team.b6.catchtable.domain.review.dto.request.UpdateReviewRequest
-import org.team.b6.catchtable.domain.review.dto.response.ReviewResponse
-import org.team.b6.catchtable.domain.review.service.ReviewServiceImpl
-import org.team.b6.catchtable.domain.store.dto.request.UpdateStoreRequest
-import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
+import org.team.b6.catchtable.domain.review.dto.request.ReviewRequest
+import org.team.b6.catchtable.domain.review.service.ReviewService
+import java.net.URI
 
-@RequestMapping("/api/reviews")
+@RequestMapping("/stores/{storeId}/reviews")
 @RestController
 class ReviewController(
-    private val reviewServiceImpl: ReviewServiceImpl
+    private val reviewService: ReviewService
 ) {
+    @GetMapping
+    fun findReviews(@PathVariable storeId: Long) =
+        ResponseEntity.ok().body(reviewService.findReviews(storeId))
 
     @GetMapping("/{reviewId}")
-    fun getReview(@PathVariable reviewId: Long): ResponseEntity<ReviewResponse> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(reviewServiceImpl.getReviewById(reviewId))
-    }
+    fun findReview(@PathVariable storeId: Long, @PathVariable reviewId: Long) =
+        ResponseEntity.ok().body(reviewService.findReview(storeId, reviewId))
 
     @PostMapping
-    fun createReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<ReviewResponse> {
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(reviewServiceImpl.createReview(createReviewRequest))
-    }
+    fun addReview(
+        @PathVariable storeId: Long,
+        @RequestBody request: ReviewRequest
+    ): ResponseEntity<Unit> =
+        ResponseEntity.created(
+            URI.create(
+                "/reviews/${reviewService.addReview(storeId, request)}"
+            )
+        ).build()
 
     @PutMapping("/{reviewId}")
     fun updateReview(
+        @PathVariable storeId: Long,
         @PathVariable reviewId: Long,
-        @RequestBody updateReviewRequest: UpdateReviewRequest
-    ): ResponseEntity<ReviewResponse> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(reviewServiceImpl.updateReview(reviewId, updateReviewRequest))
+        @RequestBody request: ReviewRequest
+    ): ResponseEntity<Unit> {
+        reviewService.updateReview(storeId, reviewId, request)
+        return ResponseEntity.ok().build()
     }
 
     @DeleteMapping("/{reviewId}")
     fun deleteReview(
+        @PathVariable storeId: Long,
         @PathVariable reviewId: Long
     ): ResponseEntity<Unit> {
-        reviewServiceImpl.deleteReview(reviewId)
-
-        return ResponseEntity
-            .status(HttpStatus.NO_CONTENT)
-            .body(null)
+        reviewService.deleteReview(storeId, reviewId)
+        return ResponseEntity.noContent().build()
     }
-
-
 }
