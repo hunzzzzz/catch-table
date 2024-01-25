@@ -13,9 +13,11 @@ class AdminController(
     fun findAllStoreRequirements() =
         ResponseEntity.ok().body(adminService.findAllStoreRequirements())
 
-    @PostMapping("/stores/{storeId}")
+    @PostMapping("/stores/{storeId}/success")
     fun acceptStoreRequirement(@PathVariable storeId: Long) =
-        ResponseEntity.ok().body(adminService.accept(storeId))
+        ResponseEntity.ok().body(adminService.handleRequirement(storeId, true))
 
-    // TODO: declineStoreRequest 메서드 추후 생성
+    @PostMapping("/stores/{storeId}/fail")
+    fun refuseStoreRequirement(@PathVariable storeId: Long) =
+        ResponseEntity.ok().body(adminService.handleRequirement(storeId, false))
 }
