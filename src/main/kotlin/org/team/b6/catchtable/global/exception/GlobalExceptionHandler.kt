@@ -60,4 +60,14 @@ class GlobalExceptionHandler(
                 path = httpServletRequest.requestURI
             )
         )
+
+    @ExceptionHandler(InvalidCredentialException::class)
+    fun handleInvalidCredentialException(e: InvalidCredentialException) =
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            ErrorResponse(
+                httpStatus = "401 Unauthorized",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
 }
