@@ -52,7 +52,7 @@ class MemberService(
     }
 
     fun login(request: LoginRequest): LoginResponse {
-        val member = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("멤버")
+        val member = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("member")
         if (member.role.name != request.role) throw InvalidCredentialException("role")
         if (!passwordEncoder.matches(request.password, member.password)) throw InvalidCredentialException("password")
 
@@ -73,19 +73,28 @@ class MemberService(
 
     fun getMember(id: Long): MemberResponse {
         val foundMember = memberRepository.findByIdOrNull(id)
-            ?: throw Exception("Temp")
+            ?: throw ModelNotFoundException("member")
         return MemberResponse.from(foundMember)
     }
 
     fun isValidNickname(nickname: String?): Boolean {
         val trimmedNickname = nickname?.trim().toString()
         val exp = Regex("^(?=.*[a-z])(?=.*[0-9]).{4,10}\$")
-        return !trimmedNickname.isNullOrEmpty() && exp.matches(trimmedNickname)
+        if (!trimmedNickname.isNullOrEmpty() && exp.matches(trimmedNickname)) {
+            return true
+        } else {
+            throw IllegalArgumentException("Invalid nickname")
+        }
     }
+
     fun isValidPassword(password: String?): Boolean {
         val trimmedPassword = password?.trim().toString()
-        val exp = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#\$%^&+=]).{8,15}\$")
-        return !trimmedPassword.isNullOrEmpty() && exp.matches(trimmedPassword)
+        val exp = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).{8,15}$")
+        if (!trimmedPassword.isNullOrEmpty() && exp.matches(trimmedPassword)) {
+            return true
+        } else {
+            throw IllegalArgumentException("Invalid password")
+        }
     }
 }
 
