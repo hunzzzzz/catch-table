@@ -44,7 +44,7 @@ class StoreService(
 
     // 식당 수정
     fun updateStore(storeId: Long, request: StoreRequest) =
-        validateNameAndAddress(request.name, request.address)
+        validateNameAndAddress(request.name, request.address, storeId)
             .run { getStore(storeId).update(request) }
 
     // 식당 제거
@@ -69,8 +69,17 @@ class StoreService(
             }
 
     private fun validateNameAndAddress(name: String, address: String) {
-        if (storeRepository.existsByName(name)) throw DuplicatedValueException("상호명")
-        else if (storeRepository.existsByAddress(address)) throw DuplicatedValueException("식당 주소")
+        if (storeRepository.existsByName(name))
+            throw DuplicatedValueException("상호명")
+        else if (storeRepository.existsByAddress(address))
+            throw DuplicatedValueException("식당 주소")
+    }
+
+    private fun validateNameAndAddress(name: String, address: String, storeId: Long) {
+        if (storeRepository.existsByName(name) && (storeRepository.findByName(name)!!.id != storeId))
+            throw DuplicatedValueException("상호명")
+        else if (storeRepository.existsByAddress(address) && (storeRepository.findByAddress(address)!!.id != storeId))
+            throw DuplicatedValueException("식당 주소")
     }
 
     private fun availableToReservation(status: StoreStatus) = (status == StoreStatus.OK)
