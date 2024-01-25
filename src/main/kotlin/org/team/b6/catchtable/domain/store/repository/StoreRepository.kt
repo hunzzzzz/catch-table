@@ -16,4 +16,6 @@ interface StoreRepository : JpaRepository<Store, Long> {
     fun existsByAddress(address: String): Boolean
 
     fun existsByName(name: String): Boolean
+
+    fun findStoreByBelongTo(memberId: Long): Store
 }
