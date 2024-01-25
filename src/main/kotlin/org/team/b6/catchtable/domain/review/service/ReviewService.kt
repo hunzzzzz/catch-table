@@ -9,6 +9,7 @@ import org.team.b6.catchtable.domain.review.dto.response.ReviewResponse
 import org.team.b6.catchtable.domain.review.repository.ReviewRepository
 import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.repository.StoreRepository
+import org.team.b6.catchtable.global.exception.ModelNotFoundException
 
 @Service
 @Transactional
@@ -51,11 +52,11 @@ class ReviewService(
         } // TODO: 추후 memberId를 받는 로직이 추가되면 validate 구현
 
     private fun getReview(reviewId: Long) =
-        reviewRepository.findByIdOrNull(reviewId) ?: throw Exception("") // TODO
+        reviewRepository.findByIdOrNull(reviewId) ?: throw ModelNotFoundException("리뷰")
 
     private fun getMember(memberId: Long) =
-        memberRepository.findByIdOrNull(memberId) ?: throw Exception("")
+        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("멤버")
 
     private fun getStore(storeId: Long): Store =
-        storeRepository.findByIdOrNull(storeId) ?: throw Exception("")
+        storeRepository.findByIdOrNull(storeId) ?: throw ModelNotFoundException("식당")
 }

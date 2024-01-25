@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.team.b6.catchtable.domain.store.model.StoreStatus
 import org.team.b6.catchtable.domain.store.repository.StoreRepository
+import org.team.b6.catchtable.global.exception.ModelNotFoundException
 
 @Service
 @Transactional
@@ -28,7 +29,7 @@ class AdminService(
     }
 
     private fun getStore(storeId: Long) =
-        (storeRepository.findByIdOrNull(storeId) ?: throw Exception("")) // TODO : ModelNotFoundException
+        (storeRepository.findByIdOrNull(storeId) ?: throw ModelNotFoundException("식당"))
 
 //    private fun sendMail(email: String, requirement: StoreRequirementCategory, isAccepted: Boolean) {
 //        SimpleMailMessage().let {
