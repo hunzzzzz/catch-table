@@ -13,6 +13,10 @@ interface StoreRepository : JpaRepository<Store, Long> {
 
     fun findAllByCategory(category: StoreCategory, sort: Sort): List<Store>
 
+    fun findByName(name: String): Store?
+
+    fun findByAddress(address: String): Store?
+
     fun existsByAddress(address: String): Boolean
 
     fun existsByName(name: String): Boolean
