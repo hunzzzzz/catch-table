@@ -21,12 +21,16 @@ class Store(
     var phone: String,
 
     @Column(name = "address", nullable = false)
-    var address: String
+    var address: String,
 ) : BaseEntity() {
     @Id
     @Column(name = "store_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    var status: StoreStatus = StoreStatus.WAITING_FOR_CREATE
 
     fun update(request: StoreRequest) {
         this.name = request.name
@@ -34,5 +38,15 @@ class Store(
         this.description = request.description
         this.phone = request.phone
         this.address = request.address
+    }
+
+    fun updateStatus(status: StoreStatus) {
+        this.status = status
+    }
+
+    fun updateForDelete() {
+        this.name = "영업 종료된 식당"
+        this.description = "영업 종료된 식당입니다."
+        updateStatus(StoreStatus.DELETED)
     }
 }
