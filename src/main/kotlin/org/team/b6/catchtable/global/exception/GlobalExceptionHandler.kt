@@ -12,7 +12,7 @@ class GlobalExceptionHandler(
     private val httpServletRequest: HttpServletRequest
 ) {
     @ExceptionHandler(InvalidStoreSearchingValuesException::class)
-    fun handleInvalidStoreCategoryException(e: InvalidStoreSearchingValuesException) =
+    fun handleInvalidStoreSearchingValuesException(e: InvalidStoreSearchingValuesException) =
         ResponseEntity.badRequest().body(
             ErrorResponse(
                 httpStatus = "401 Bad Request",
@@ -22,15 +22,15 @@ class GlobalExceptionHandler(
         )
 
     @ExceptionHandler(ModelNotFoundException::class)
-    fun handleModelNotFoundException(e: ModelNotFoundException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+    fun handleModelNotFoundException(e: ModelNotFoundException) =
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ErrorResponse(
                 httpStatus = "404 Not Found",
                 message = e.message.toString(),
                 path = httpServletRequest.requestURI
             )
         )
-    }
+
     @ExceptionHandler(IllegalStateException::class)
     fun handleAlreadyAppliedException(e: IllegalStateException) =
         ResponseEntity.status(HttpStatus.CONFLICT).body(
@@ -51,4 +51,13 @@ class GlobalExceptionHandler(
             )
         )
 
+    @ExceptionHandler(DuplicatedValueException::class)
+    fun handleDuplicatedValueException(e: DuplicatedValueException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "401 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
 }

@@ -47,7 +47,7 @@ class MemberService(
     }
 
     fun login(request: LoginRequest): LoginResponse {
-        val member = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("member")
+        val member = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("멤버")
         if (member.role.name != request.role) throw InvalidCredentialException("role")
         if (!passwordEncoder.matches(request.password, member.password)) throw InvalidCredentialException("password")
 
@@ -72,4 +72,3 @@ class MemberService(
         return MemberResponse.from(foundMember)
     }
 }
-
