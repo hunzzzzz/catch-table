@@ -36,10 +36,20 @@ class StoreService(
     fun findStore(storeId: Long) = StoreResponse.from(getStore(storeId))
 
     // 식당 등록
-    fun registerStore(request: StoreRequest) = storeRepository.save(request.to()).id!!
+    fun registerStore(request: StoreRequest) =
+        validateName(request.name)
+        .run { validateAddress(request.address)
+               storeRepository.save(request.to()).id!!
+        }
 
     // 식당 수정
-    fun updateStore(storeId: Long, request: StoreRequest) = getStore(storeId).update(request)
+    fun updateStore(storeId: Long, request: StoreRequest) {
+        validateName(request.name)
+        validateAddress(request.address)
+        return getStore(storeId).update(request)
+    }
+
+    fun registerStore(requiredStore: Store) = storeRepository.save(requiredStore)
 
     // 식당 제거
     fun deleteStore(storeId: Long) = getStore(storeId).updateStatus(StoreStatus.WAITING_FOR_DELETE)
@@ -54,13 +64,20 @@ class StoreService(
             ?: throw InvalidStoreSearchingValuesException("criteria")
 
     private fun getStore(storeId: Long) =
-        (storeRepository.findByIdOrNull(storeId)
-            ?: throw Exception("")) // TODO : ModelNotFoundException
+        (storeRepository.findByIdOrNull(storeId) ?: throw Exception("")) // TODO : ModelNotFoundException
             .let {
                 if (!availableToReservation(it.status))
                     throw Exception("") // TODO : Exception 이름 미정 (
                 else it
             }
+
+    private fun validateName(name: String) {
+        if (storeRepository.existByName(name)) throw Exception(message = "이미 존재 하는 이름 입니다.")
+    }
+
+    private fun validateAddress(address: String) {
+        if (storeRepository.existByAddress(address)) throw Exception(message = "이미 존재 하는 주소 입니다.")
+    }
 
     private fun availableToReservation(status: StoreStatus) = (status == StoreStatus.OK)
 }
