@@ -2,18 +2,15 @@ package org.team.b6.catchtable.domain.store.controller
 
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
-import org.team.b6.catchtable.domain.store.service.StoreRequirementService
 import org.team.b6.catchtable.domain.store.service.StoreService
-import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
+import java.net.URI
 
 @RestController
 @RequestMapping("/stores")
 class StoreController(
-    private val storeService: StoreService,
-    private val storeRequirementService: StoreRequirementService
+    private val storeService: StoreService
 ) {
     @GetMapping("/{category}")
     fun findAllStoresByCategory(@PathVariable category: String) =
@@ -34,17 +31,17 @@ class StoreController(
         ResponseEntity.ok().body(storeService.findStore(storeId))
 
     @PostMapping
-    fun registerStore(@RequestBody request: StoreRequest): ResponseEntity<Unit> {
-        storeRequirementService.applyForRegister(request)
-        return ResponseEntity.ok().build()
-    }
+    fun registerStore(@RequestBody request: StoreRequest): ResponseEntity<Unit> =
+        ResponseEntity.created(
+            URI.create("/stores/store/${storeService.registerStore(request)}")
+        ).build()
 
     @PutMapping("/{storeId}")
     fun updateStore(
         @PathVariable storeId: Long,
-        @RequestBody updateStoreRequest: StoreRequest
+        @RequestBody request: StoreRequest
     ): ResponseEntity<Unit> {
-        storeRequirementService.applyForUpdate(storeId, updateStoreRequest)
+        storeService.updateStore(storeId, request)
         return ResponseEntity.ok().build()
     }
 
@@ -52,7 +49,7 @@ class StoreController(
     fun deleteStore(
         @PathVariable storeId: Long
     ): ResponseEntity<Unit> {
-        storeRequirementService.applyForDelete(storeId)
-        return ResponseEntity.noContent().build()
+        storeService.deleteStore(storeId)
+        return ResponseEntity.ok().build()
     }
 }

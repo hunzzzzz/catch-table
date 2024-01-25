@@ -2,6 +2,7 @@ package org.team.b6.catchtable.domain.review.model
 
 import jakarta.persistence.*
 import org.team.b6.catchtable.domain.member.model.Member
+import org.team.b6.catchtable.domain.review.dto.request.ReviewRequest
 import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.global.entity.BaseEntity
 
@@ -27,9 +28,8 @@ class Review(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    fun update(content: String,ratings: Int){
-        this.content = content
-        this.ratings = ratings
+    fun update(request: ReviewRequest) {
+        this.content = request.content
+        this.ratings = request.ratings
     }
 }
-
