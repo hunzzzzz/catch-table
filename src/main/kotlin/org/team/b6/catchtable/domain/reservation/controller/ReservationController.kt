@@ -46,7 +46,7 @@ class ReservationController(
             .body(reservationService.storeReservationList(memberPrincipal))
     }
 
-    @PutMapping("/members/myReservations/{reservationId}")
+    @PutMapping("/members/myReservations/{reservationId}/cancel")
 //    @PreAuthorize("hasRole('USER')")
     fun cancelReservation(
         @PathVariable reservationId: Long,
@@ -58,7 +58,7 @@ class ReservationController(
             .body(reservationService.cancelReservation(reservationId, memberPrincipal))
     }
 
-    @PutMapping("/members/storeReservations/{reservationId}")
+    @PutMapping("/members/storeReservations/{reservationId}/confirm")
 //    @PreAuthorize("hasRole('OWNER')")
     fun confirmReservation(
         @PathVariable reservationId: Long,
@@ -69,7 +69,7 @@ class ReservationController(
             .body(reservationService.confirmReservation(reservationId, memberPrincipal))
     }
 
-    @PutMapping("/members/storeReservations/{reservationId}")
+    @PutMapping("/members/storeReservations/{reservationId}/reject")
 //    @PreAuthorize("hasRole('OWNER')")
     fun rejectReservation(
         @PathVariable reservationId: Long,
