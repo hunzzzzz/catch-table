@@ -16,6 +16,6 @@ data class StoreRequest(
         category = StoreCategory.valueOf(category),
         description = description,
         phone = phone,
-        address = address
+        address = address,
     )
 }
