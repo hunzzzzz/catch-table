@@ -10,6 +10,9 @@ class Store(
     @Column(name = "name", nullable = false)
     var name: String,
 
+    @Column(name = "belong_to", nullable = false)
+    var belongTo: Long,
+
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
     var category: StoreCategory,

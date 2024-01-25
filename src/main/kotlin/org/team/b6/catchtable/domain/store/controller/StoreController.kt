@@ -2,9 +2,11 @@ package org.team.b6.catchtable.domain.store.controller
 
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.service.StoreService
+import org.team.b6.catchtable.global.security.MemberPrincipal
 import java.net.URI
 
 @RestController
@@ -31,9 +33,12 @@ class StoreController(
         ResponseEntity.ok().body(storeService.findStore(storeId))
 
     @PostMapping
-    fun registerStore(@RequestBody request: StoreRequest): ResponseEntity<Unit> =
+    fun registerStore(
+        @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
+        @RequestBody request: StoreRequest
+    ): ResponseEntity<Unit> =
         ResponseEntity.created(
-            URI.create("/stores/store/${storeService.registerStore(request)}")
+            URI.create("/stores/store/${storeService.registerStore(memberPrincipal, request)}")
         ).build()
 
     @PutMapping("/{storeId}")
