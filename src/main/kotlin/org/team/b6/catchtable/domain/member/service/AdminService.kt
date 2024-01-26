@@ -51,20 +51,34 @@ class AdminService(
                             text = Variables.MAIL_CONTENT_STORE_DELETE_ACCEPTED
                         )
                         it.updateForDelete()
+                        // 리뷰 삭제 코드
+                    reviewRepository.findAll() // 모든 리뷰들을 꺼내온다
+                        .filter { it.store.id == storeId } // 리뷰 중에서 storeId가 일치하는 리뷰들만 꺼내온다
+                        .map { reviewRepository.delete(it) } // 지운다
                     } else sendMail(
                         email = globalService.getMember(it.belongTo).email,
                         subject = Variables.MAIL_SUBJECT_REFUSED,
                         text = Variables.MAIL_CONTENT_STORE_DELETE_REFUSED
                     )
+
                 }
 
                 else -> {}
             }
         }
+    private fun getStore(storeId: Long) =
+        (storeRepository.findByIdOrNull(storeId) ?: throw ModelNotFoundException("식당"))
 
-    // TODO: 추후 삭제 (테스트용)
-    fun registerAdmin(request: SignupMemberRequest) {
-        memberRepository.save(request.to(passwordEncoder))
+    private fun getMember(memberId: Long) =
+        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("멤버")
+
+    private fun sendMail(email: String, text: String, isAccepted: Boolean) {
+        val mimeMessage = javaMailSender.createMimeMessage()
+        val helper = MimeMessageHelper(mimeMessage, false)
+        helper.setTo(email)
+        helper.setSubject(Variables.MAIL_SUBJECT)
+        helper.setText(text)
+        javaMailSender.send(mimeMessage)
     }
 
     private fun sendMail(email: String, subject: String, text: String) =

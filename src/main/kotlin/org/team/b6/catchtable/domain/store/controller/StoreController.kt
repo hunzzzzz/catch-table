@@ -1,5 +1,6 @@
 package org.team.b6.catchtable.domain.store.controller
 
+import jakarta.validation.Valid
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -21,11 +22,10 @@ class StoreController(
     @GetMapping("/{category}/sorted")
     fun findAllStoresByCategoryWithSortCriteria(
         @PathVariable category: String,
-        @RequestParam direction: Sort.Direction,
         @RequestParam criteria: String
     ) =
         ResponseEntity.ok().body(
-            storeService.findAllStoresByCategoryWithSortCriteria(category, direction, criteria)
+            storeService.findAllStoresByCategoryWithSortCriteria(category, criteria)
         )
 
     @GetMapping("/store/{storeId}")
@@ -35,7 +35,7 @@ class StoreController(
     @PostMapping
     fun registerStore(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
-        @RequestBody request: StoreRequest
+        @RequestBody @Valid request: StoreRequest
     ): ResponseEntity<Unit> =
         ResponseEntity.created(
             URI.create("/stores/store/${storeService.registerStore(memberPrincipal, request)}")
