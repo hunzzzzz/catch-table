@@ -82,7 +82,7 @@ class MemberService(
         }
 
         if (!passwordEncoder.matches(request.password, foundMember.password)) {
-            if (request.confirmPassword == null || !passwordEncoder.matches(request.password, request.confirmPassword)) {
+            if (request.newPassword == null || !passwordEncoder.matches(request.password, request.newPassword)) {
                 throw IllegalArgumentException("Passwords do not match")
             }
             foundMember.password = passwordEncoder.encode(request.password)
