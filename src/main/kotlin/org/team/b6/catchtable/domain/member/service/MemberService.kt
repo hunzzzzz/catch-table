@@ -14,6 +14,8 @@ import org.team.b6.catchtable.domain.member.dto.response.MemberResponse
 import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.member.model.MemberRole
 import org.team.b6.catchtable.domain.member.repository.MemberRepository
+import org.team.b6.catchtable.domain.review.repository.ReviewRepository
+import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.InvalidCredentialException
 import org.team.b6.catchtable.global.exception.ModelNotFoundException
 import org.team.b6.catchtable.global.security.jwt.JwtPlugin
@@ -24,6 +26,8 @@ class MemberService(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin,
+//    private val storeRepository: StoreRepository,
+//    private val reviewRepository: ReviewRepository
 ) {
 
     fun signUp(request: SignupMemberRequest): MemberResponse {
@@ -59,12 +63,11 @@ class MemberService(
 
         return LoginResponse(
             accessToken = jwtPlugin.generateAccessToken(
-                subject = member.id.toString(),
-                email = member.email,
-                role = member.role.name
+                subject = member.id.toString(), email = member.email, role = member.role.name
             )
         )
     }
+
     fun updateMember(request: UpdateMemberRequest): MemberResponse {
         val foundMember = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("member")
 
@@ -74,8 +77,7 @@ class MemberService(
 
         if (!passwordEncoder.matches(request.password, foundMember.password)) {
             if (request.confirmPassword == null || !passwordEncoder.matches(
-                    request.password,
-                    request.confirmPassword
+                    request.password, request.confirmPassword
                 )
             ) {
                 throw IllegalArgumentException("Passwords do not match")
@@ -89,14 +91,40 @@ class MemberService(
         return MemberResponse.from(foundMember)
     }
 
+    fun withdrawMember(id: Long) {
+        val member = memberRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Memeber")
+
+        when (member.role) {
+            MemberRole.USER -> {
+                member.nickname = "탈퇴한 회원${member.id}"
+                member.role = MemberRole.WITHDRAWN
+                member.isDeleted = true
+            }
+
+            MemberRole.OWNER -> {
+//                val stores = storeRepository.findByBelongsTo(memberId)
+//                stores.forEach { store ->
+//                    reviewRepository.deleteByStoreId(store.id!!)
+//                    storeRepository.delete(store)
+//                }
+                member.nickname = "탈퇴한 회원${member.id}"
+                member.role = MemberRole.WITHDRAWN
+                member.isDeleted = true
+            }
+
+            MemberRole.ADMIN -> throw IllegalArgumentException("Admin cannot withdraw")
+            else -> throw IllegalArgumentException("Invalid role")
+        }
+
+    }
+
     fun getMemberList(): List<MemberResponse> {
         val memberList = memberRepository.findAll().map { MemberResponse.from(it) }
         return memberList
     }
 
     fun getMember(id: Long): MemberResponse {
-        val foundMember = memberRepository.findByIdOrNull(id)
-            ?: throw ModelNotFoundException("member")
+        val foundMember = memberRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("member")
         return MemberResponse.from(foundMember)
     }
 
@@ -109,6 +137,7 @@ class MemberService(
             throw IllegalArgumentException("Invalid nickname")
         }
     }
+
     fun isValidPassword(password: String?): Boolean {
         val trimmedPassword = password?.trim().toString()
         val exp = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).{8,15}$")

@@ -31,19 +31,18 @@ class MemberController(
             .body(memberService.login(loginRequest))
     }
 
-    fun emailCheck(){
-        TODO()
-    }
-
-    fun signupCheck() {
-        TODO()
-    }
 
     @PutMapping("/{memberId}")
     fun updateMember(@PathVariable memberId: Long, @RequestBody updateRequest: UpdateMemberRequest): ResponseEntity<MemberResponse>{
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(memberService.updateMember(updateRequest))
+    }
+
+    @PutMapping("/{memberId}/withdraw")
+    fun withdrawMember(@PathVariable memberId: Long): ResponseEntity<Unit>{
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(memberService.withdrawMember(memberId))
     }
 
     @GetMapping
@@ -61,10 +60,5 @@ class MemberController(
             .status(HttpStatus.OK)
             .body(memberService.getMember(memberId))
     }
-
-    //fun logout(){}
-
-    fun memberWithDrawal(){
-        TODO()
-    }
 }
+
