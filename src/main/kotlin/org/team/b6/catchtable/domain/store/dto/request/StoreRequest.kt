@@ -32,7 +32,7 @@ data class StoreRequest(
 
     @field:NotBlank
     val address: String,
-
+  
     @NotNull
     @field:Range(
         min = 5,

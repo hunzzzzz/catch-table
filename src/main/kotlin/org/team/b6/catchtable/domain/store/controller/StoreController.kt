@@ -22,11 +22,10 @@ class StoreController(
     @GetMapping("/{category}/sorted")
     fun findAllStoresByCategoryWithSortCriteria(
         @PathVariable category: String,
-        @RequestParam direction: Sort.Direction,
         @RequestParam criteria: String
     ) =
         ResponseEntity.ok().body(
-            storeService.findAllStoresByCategoryWithSortCriteria(category, direction, criteria)
+            storeService.findAllStoresByCategoryWithSortCriteria(category, criteria)
         )
 
     @GetMapping("/store/{storeId}")

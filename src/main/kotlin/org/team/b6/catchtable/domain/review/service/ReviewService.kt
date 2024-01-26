@@ -24,13 +24,15 @@ class ReviewService(
     fun findReview(storeId: Long, reviewId: Long) =
         ReviewResponse.from(getReview(reviewId))
 
-    fun addReview(storeId: Long, request: ReviewRequest) =
+    // review 등록 시 특정 키워드가 content에 포함되면 등록 못하게 막기!!
+    fun addReview(storeId: Long, request: ReviewRequest) {
         reviewRepository.save(
             request.to(
                 member = getMember(request.memberId),
                 store = getStore(storeId)
             )
         ).id
+    }
 
     fun updateReview(storeId: Long, reviewId: Long, request: ReviewRequest) =
         getReview(reviewId).update(request)
