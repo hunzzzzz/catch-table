@@ -2,6 +2,7 @@ package org.team.b6.catchtable.global.variable
 
 object Variables {
     val CRITERIA_LIST = mutableListOf("name")
+    val BANNED_WORD_LIST = mutableListOf("나쁜 말", "진짜 나쁜 말", "엄마 사랑해요")
 
     const val MAIL_SUBJECT_ACCEPTED = "[캐치테이블] 사장님의 요청이 정상적으로 승인되었습니다."
     const val MAIL_SUBJECT_REFUSED = "[캐치테이블] 사장님의 요청이 거절되었습니다."
