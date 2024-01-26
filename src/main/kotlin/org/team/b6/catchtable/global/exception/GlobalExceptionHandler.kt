@@ -63,6 +63,16 @@ class GlobalExceptionHandler(
             )
         )
 
+    @ExceptionHandler(EtiquetteException::class)
+    fun handleEtiquetteException(e: EtiquetteException) =
+        ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+            ErrorResponse(
+                httpStatus = "406 Not Acceptable",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
     @ExceptionHandler(InvalidCredentialException::class)
     fun handleInvalidCredentialException(e: InvalidCredentialException) =
         ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
