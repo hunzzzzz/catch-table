@@ -63,6 +63,16 @@ class GlobalExceptionHandler(
             )
         )
 
+    @ExceptionHandler(EtiquetteException::class)
+    fun handleEtiquetteException(e: EtiquetteException) =
+        ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+            ErrorResponse(
+                httpStatus = "406 Not Acceptable",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
     @ExceptionHandler(InvalidCredentialException::class)
     fun handleInvalidCredentialException(e: InvalidCredentialException) =
         ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
@@ -73,11 +83,21 @@ class GlobalExceptionHandler(
             )
         )
 
+    @ExceptionHandler(InvalidRoleException::class)
+    fun handleInvalidRoleException(e: InvalidRoleException) =
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            ErrorResponse(
+                httpStatus = "401 Unauthorized",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException) =
-        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+        ResponseEntity.badRequest().body(
             ErrorResponse(
-                httpStatus = "401 Bad Request",
+                httpStatus = "400 Bad Request",
                 message = e.bindingResult.allErrors.toMutableList().first().defaultMessage!!,
                 path = httpServletRequest.requestURI.toString(),
                 errorContent = e.bindingResult.allErrors.toMutableList().first().let {

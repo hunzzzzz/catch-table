@@ -5,7 +5,6 @@ import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.model.StoreCategory
 import java.time.LocalDateTime
-import java.time.LocalTime
 
 data class StoreResponse(
     val name: String,

@@ -30,7 +30,7 @@ class Store(
     var openTime: Int,
 
     @Column(name = "close_time", nullable = false)
-    var closeTime: Int,
+    var closeTime: Int
 
 //    @JoinColumn(name = "time_table_id")
 //    @OneToOne(targetEntity = TimeTable::class, fetch = FetchType.LAZY, cascade = [CascadeType.ALL])

@@ -1,5 +1,7 @@
 package org.team.b6.catchtable.domain.member.service
 
+import org.intellij.lang.annotations.Pattern
+import org.springframework.boot.fromApplication
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -12,6 +14,8 @@ import org.team.b6.catchtable.domain.member.dto.response.MemberResponse
 import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.member.model.MemberRole
 import org.team.b6.catchtable.domain.member.repository.MemberRepository
+import org.team.b6.catchtable.domain.review.repository.ReviewRepository
+import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.InvalidCredentialException
 import org.team.b6.catchtable.global.exception.ModelNotFoundException
 import org.team.b6.catchtable.global.security.jwt.JwtPlugin
@@ -22,9 +26,14 @@ class MemberService(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin,
+//    private val storeRepository: StoreRepository,
+//    private val reviewRepository: ReviewRepository
 ) {
 
     fun signUp(request: SignupMemberRequest): MemberResponse {
+ //       isValidNickname(request.nickname)
+//        isValidPassword(request.password)
+
         if (memberRepository.existsByEmail(request.email)) {
             throw IllegalStateException("Email is already in use")
         }
@@ -60,19 +69,20 @@ class MemberService(
             )
         )
     }
-    fun updateMember(request: UpdateMemberRequest): MemberResponse {
+    fun updateMember(memberId: Long,request: UpdateMemberRequest): MemberResponse {
+        val foundIdMember = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("member")
         val foundMember = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("member")
+
+        if(foundIdMember != foundMember){
+            throw InvalidCredentialException("Member")
+        }
 
         if (foundMember.nickname != request.nickname && memberRepository.existsByNickname(request.nickname)) {
             throw IllegalStateException("Nickname is already in use")
         }
 
         if (!passwordEncoder.matches(request.password, foundMember.password)) {
-            if (request.confirmPassword == null || !passwordEncoder.matches(
-                    request.password,
-                    request.confirmPassword
-                )
-            ) {
+            if (request.newPassword == null || !passwordEncoder.matches(request.password, request.newPassword)) {
                 throw IllegalArgumentException("Passwords do not match")
             }
             foundMember.password = passwordEncoder.encode(request.password)
@@ -82,6 +92,33 @@ class MemberService(
         foundMember.name = request.name
 
         return MemberResponse.from(foundMember)
+    }
+
+    fun withdrawMember(id: Long) {
+        val member = memberRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Memeber")
+
+        when (member.role) {
+            MemberRole.USER -> {
+                member.nickname = "탈퇴한 회원${member.id}"
+                member.role = MemberRole.WITHDRAWN
+                member.isDeleted = true
+            }
+
+            MemberRole.OWNER -> {
+//                val stores = storeRepository.findByBelongsTo(memberId)
+//                stores.forEach { store ->
+//                    reviewRepository.deleteByStoreId(store.id!!)
+//                    storeRepository.delete(store)
+//                }
+                member.nickname = "탈퇴한 회원${member.id}"
+                member.role = MemberRole.WITHDRAWN
+                member.isDeleted = true
+            }
+
+            MemberRole.ADMIN -> throw IllegalArgumentException("Admin cannot withdraw")
+            else -> throw IllegalArgumentException("Invalid role")
+        }
+
     }
 
     fun getMemberList(): List<MemberResponse> {

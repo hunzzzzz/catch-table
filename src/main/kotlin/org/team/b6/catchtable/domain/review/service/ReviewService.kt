@@ -1,64 +1,80 @@
 package org.team.b6.catchtable.domain.review.service
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.team.b6.catchtable.domain.member.repository.MemberRepository
+import org.team.b6.catchtable.domain.member.model.MemberRole
 import org.team.b6.catchtable.domain.review.dto.request.ReviewRequest
 import org.team.b6.catchtable.domain.review.dto.response.ReviewResponse
+import org.team.b6.catchtable.domain.review.model.Review
 import org.team.b6.catchtable.domain.review.repository.ReviewRepository
-import org.team.b6.catchtable.domain.store.model.Store
-import org.team.b6.catchtable.domain.store.repository.StoreRepository
-import org.team.b6.catchtable.global.exception.ModelNotFoundException
+import org.team.b6.catchtable.global.exception.EtiquetteException
+import org.team.b6.catchtable.global.exception.InvalidRoleException
+import org.team.b6.catchtable.global.security.MemberPrincipal
+import org.team.b6.catchtable.global.service.GlobalService
+import org.team.b6.catchtable.global.variable.Variables
 
 @Service
 @Transactional
 class ReviewService(
-    private val memberRepository: MemberRepository,
-    private val storeRepository: StoreRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val globalService: GlobalService
 ) {
+    // 전체 리뷰 조회
     fun findReviews(storeId: Long) =
-        reviewRepository.findAll().filter { it.store.id == storeId }
+        globalService.getAllReviews().filter { it.store.id == storeId }
 
+    // 단일 리뷰 조회
     fun findReview(storeId: Long, reviewId: Long) =
-        ReviewResponse.from(getReview(reviewId))
+        ReviewResponse.from(globalService.getReview(reviewId))
 
-    // review 등록 시 특정 키워드가 content에 포함되면 등록 못하게 막기!!
-    fun addReview(storeId: Long, request: ReviewRequest) {
+    // 리뷰 등록
+    fun addReview(memberPrincipal: MemberPrincipal, storeId: Long, request: ReviewRequest) {
+        availableToAddComment(memberPrincipal.id, storeId)
+        validateContent(request.content)
         reviewRepository.save(
             request.to(
-                member = getMember(request.memberId),
-                store = getStore(storeId)
+                member = globalService.getMember(request.memberId),
+                store = globalService.getStore(storeId)
             )
         ).id
     }
 
-    fun updateReview(storeId: Long, reviewId: Long, request: ReviewRequest) =
-        getReview(reviewId).update(request)
+    // 리뷰 수정
+    fun updateReview(memberPrincipal: MemberPrincipal, storeId: Long, reviewId: Long, request: ReviewRequest) {
+        validateContent(request.content)
+        globalService.getReview(reviewId).let {
+            availableToUpdateComment(it, memberPrincipal.id)
+            it.update(request)
+        }
+    }
 
-    fun deleteReview(storeId: Long, reviewId: Long) =
-        reviewRepository.deleteById(reviewId)
+    // 리뷰 삭제
+    fun deleteReview(memberPrincipal: MemberPrincipal, storeId: Long, reviewId: Long) =
+        globalService.getReview(reviewId).let {
+            availableToDeleteComment(it, memberPrincipal.id)
+            reviewRepository.delete(it)
+        }
 
-    private fun validate(memberId: Long, storeId: Long, reviewId: Long) =
-        getReview(reviewId).let {
-            if (it.member.id != memberId) throw Exception("")
-            else if (it.store.id != storeId) throw Exception("")
-        } // TODO: 추후 memberId를 받는 로직이 추가되면 validate 구현
+    // 리뷰 내용에 욕설이 포함된 경우 등록 불가
+    private fun validateContent(content: String) {
+        if (Variables.BANNED_WORD_LIST.any { content.contains(it) })
+            throw EtiquetteException()
+    }
 
-    private fun validateAndGetReview(memberId: Long, storeId: Long, reviewId: Long) =
-        getReview(reviewId).let {
-            if (it.member.id != memberId) throw Exception("")
-            else if (it.store.id != storeId) throw Exception("")
-            it
-        } // TODO: 추후 memberId를 받는 로직이 추가되면 validate 구현
+    // 리뷰 등록이 가능한지 확인 (해당 식당에 예약 이력이 있는지)
+    private fun availableToAddComment(memberId: Long, storeId: Long) {
+        if (!globalService.getAllReservations().any { it.store.id == storeId && it.member.id == memberId })
+            throw InvalidRoleException("Add Review")
+    }
 
-    private fun getReview(reviewId: Long) =
-        reviewRepository.findByIdOrNull(reviewId) ?: throw ModelNotFoundException("리뷰")
+    // 리뷰 수정이 가능한지 확인 (해당 리뷰를 본인이 작성했는지)
+    private fun availableToUpdateComment(review: Review, memberId: Long) {
+        if (review.member.id != memberId) throw InvalidRoleException("Update Review")
+    }
 
-    private fun getMember(memberId: Long) =
-        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("멤버")
-
-    private fun getStore(storeId: Long): Store =
-        storeRepository.findByIdOrNull(storeId) ?: throw ModelNotFoundException("식당")
+    // 리뷰 삭제가 가능한지 확인 (해당 리뷰를 USER 본인이 작성했는지, but ADMIN인 경우 제외)
+    private fun availableToDeleteComment(review: Review, memberId: Long) {
+        if (globalService.getMember(memberId).role == MemberRole.USER && review.member.id != memberId)
+            throw InvalidRoleException("Delete Review")
+    }
 }

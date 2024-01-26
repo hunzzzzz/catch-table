@@ -57,7 +57,7 @@ data class StoreRequest(
         phone = phone,
         address = address,
         openTime = openTime,
-        closeTime = closeTime,
+        closeTime = closeTime
 //        timeTable = TimeTable()
     )
 }
