@@ -1,6 +1,5 @@
 package org.team.b6.catchtable.domain.store.dto.request
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.model.StoreCategory
 import java.time.LocalTime
@@ -11,10 +10,8 @@ data class StoreRequest(
     val description: String,
     val phone: String,
     val address: String,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
-    val openTime: LocalTime,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
-    val closeTime: LocalTime
+    val openTime: Int,
+    val closeTime: Int
 ) {
     fun to(ownerId: Long) = Store(
         belongTo = ownerId,
@@ -23,7 +20,7 @@ data class StoreRequest(
         description = description,
         phone = phone,
         address = address,
-        openTime = openTime,
-        closeTime = closeTime
+        openTime = LocalTime.of(openTime, 0),
+        closeTime = LocalTime.of(closeTime, 0)
     )
 }
