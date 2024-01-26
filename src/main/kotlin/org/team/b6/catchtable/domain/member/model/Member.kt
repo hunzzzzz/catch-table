@@ -8,7 +8,7 @@ import org.team.b6.catchtable.global.entity.BaseEntity
 class Member(
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    val role: MemberRole,
+    var role: MemberRole,
 
     @Column(name = "name", nullable = false)
     var name: String,
@@ -20,7 +20,11 @@ class Member(
     val email: String,
 
     @Column(name = "password", nullable = false)
-    var password: String
+    var password: String,
+
+    @Column(name = "is_deleted", nullable = false)
+    var isDeleted: Boolean = false
+
 ) : BaseEntity() {
     @Id
     @Column(name = "member_id")
