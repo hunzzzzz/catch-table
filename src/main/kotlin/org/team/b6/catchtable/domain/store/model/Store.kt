@@ -3,7 +3,6 @@ package org.team.b6.catchtable.domain.store.model
 import jakarta.persistence.*
 import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.global.entity.BaseEntity
-import java.time.LocalTime
 
 @Entity
 @Table(name = "Stores")
@@ -27,11 +26,11 @@ class Store(
     @Column(name = "address", nullable = false)
     var address: String,
 
-    @Column(name = "open_time", columnDefinition = "TIME", nullable = false)
-    var openTime: LocalTime,
+    @Column(name = "open_time", nullable = false)
+    var openTime: Int,
 
-    @Column(name = "close_time", columnDefinition = "TIME", nullable = false)
-    var closeTime: LocalTime
+    @Column(name = "close_time", nullable = false)
+    var closeTime: Int
 ) : BaseEntity() {
     @Id
     @Column(name = "store_id")

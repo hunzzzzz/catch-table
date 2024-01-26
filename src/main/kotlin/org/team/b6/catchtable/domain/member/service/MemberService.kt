@@ -1,7 +1,5 @@
 package org.team.b6.catchtable.domain.member.service
 
-import org.intellij.lang.annotations.Pattern
-import org.springframework.boot.fromApplication
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -31,9 +29,6 @@ class MemberService(
 ) {
 
     fun signUp(request: SignupMemberRequest): MemberResponse {
-        isValidNickname(request.nickname)
-//        isValidPassword(request.password)
-
         if (memberRepository.existsByEmail(request.email)) {
             throw IllegalStateException("Email is already in use")
         }
@@ -126,25 +121,5 @@ class MemberService(
     fun getMember(id: Long): MemberResponse {
         val foundMember = memberRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("member")
         return MemberResponse.from(foundMember)
-    }
-
-    fun isValidNickname(nickname: String?): Boolean {
-        val trimmedNickname = nickname?.trim().toString()
-        val exp = Regex("^(?=.*[a-z])(?=.*[0-9]).{4,10}\$")
-        if (!trimmedNickname.isNullOrEmpty() && exp.matches(trimmedNickname)) {
-            return true
-        } else {
-            throw IllegalArgumentException("Invalid nickname")
-        }
-    }
-
-    fun isValidPassword(password: String?): Boolean {
-        val trimmedPassword = password?.trim().toString()
-        val exp = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).{8,15}$")
-        if (!trimmedPassword.isNullOrEmpty() && exp.matches(trimmedPassword)) {
-            return true
-        } else {
-            throw IllegalArgumentException("Invalid password")
-        }
     }
 }
