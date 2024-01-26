@@ -7,7 +7,6 @@ import org.hibernate.validator.constraints.Range
 import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.model.StoreCategory
 import org.team.b6.catchtable.global.aop.ValidCategory
-import java.time.LocalTime
 
 data class StoreRequest(
     @field:NotBlank
@@ -32,7 +31,7 @@ data class StoreRequest(
 
     @field:NotBlank
     val address: String,
-  
+
     @NotNull
     @field:Range(
         min = 5,
@@ -56,7 +55,7 @@ data class StoreRequest(
         description = description,
         phone = phone,
         address = address,
-        openTime = LocalTime.of(openTime, 0),
-        closeTime = LocalTime.of(closeTime, 0)
+        openTime = openTime,
+        closeTime = closeTime
     )
 }
