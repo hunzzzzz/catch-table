@@ -1,5 +1,7 @@
 package org.team.b6.catchtable.domain.member.service
 
+import org.intellij.lang.annotations.Pattern
+import org.springframework.boot.fromApplication
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -29,6 +31,9 @@ class MemberService(
 ) {
 
     fun signUp(request: SignupMemberRequest): MemberResponse {
+ //       isValidNickname(request.nickname)
+//        isValidPassword(request.password)
+
         if (memberRepository.existsByEmail(request.email)) {
             throw IllegalStateException("Email is already in use")
         }
@@ -58,23 +63,26 @@ class MemberService(
 
         return LoginResponse(
             accessToken = jwtPlugin.generateAccessToken(
-                subject = member.id.toString(), email = member.email, role = member.role.name
+                subject = member.id.toString(),
+                email = member.email,
+                role = member.role.name
             )
         )
     }
-
-    fun updateMember(request: UpdateMemberRequest): MemberResponse {
+    fun updateMember(memberId: Long,request: UpdateMemberRequest): MemberResponse {
+        val foundIdMember = memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("member")
         val foundMember = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("member")
+
+        if(foundIdMember != foundMember){
+            throw InvalidCredentialException("Member")
+        }
 
         if (foundMember.nickname != request.nickname && memberRepository.existsByNickname(request.nickname)) {
             throw IllegalStateException("Nickname is already in use")
         }
 
         if (!passwordEncoder.matches(request.password, foundMember.password)) {
-            if (request.confirmPassword == null || !passwordEncoder.matches(
-                    request.password, request.confirmPassword
-                )
-            ) {
+            if (request.newPassword == null || !passwordEncoder.matches(request.password, request.newPassword)) {
                 throw IllegalArgumentException("Passwords do not match")
             }
             foundMember.password = passwordEncoder.encode(request.password)
@@ -119,7 +127,8 @@ class MemberService(
     }
 
     fun getMember(id: Long): MemberResponse {
-        val foundMember = memberRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("member")
+        val foundMember = memberRepository.findByIdOrNull(id)
+            ?: throw ModelNotFoundException("member")
         return MemberResponse.from(foundMember)
     }
 }
