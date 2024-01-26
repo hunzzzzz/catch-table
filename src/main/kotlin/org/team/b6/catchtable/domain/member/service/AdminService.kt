@@ -72,6 +72,12 @@ class AdminService(
                 else -> {}
             }
         }
+
+    // TODO: 추후 삭제 (테스트용)
+    fun registerAdmin(request: SignupMemberRequest) {
+        memberRepository.save(request.to(passwordEncoder))
+    }
+
     private fun getStore(storeId: Long) =
         (storeRepository.findByIdOrNull(storeId) ?: throw ModelNotFoundException("식당"))
 

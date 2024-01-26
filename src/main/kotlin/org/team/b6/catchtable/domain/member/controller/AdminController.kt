@@ -23,8 +23,8 @@ class AdminController(
         ResponseEntity.ok().body(adminService.handleRequirement(storeId, false))
 
     // TODO: 추후 삭제 (테스트용)
-//    @PostMapping
-//    fun registerAdmin(@RequestBody request: SignupMemberRequest) {
-//        ResponseEntity.ok().body(adminService.registerAdmin(request))
-//    }
+    @PostMapping
+    fun registerAdmin(@RequestBody request: SignupMemberRequest) {
+        ResponseEntity.ok().body(adminService.registerAdmin(request))
+    }
 }
