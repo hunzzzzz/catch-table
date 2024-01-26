@@ -1,5 +1,6 @@
 package org.team.b6.catchtable.domain.store.controller
 
+import jakarta.validation.Valid
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -35,7 +36,7 @@ class StoreController(
     @PostMapping
     fun registerStore(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
-        @RequestBody request: StoreRequest
+        @RequestBody @Valid request: StoreRequest
     ): ResponseEntity<Unit> =
         ResponseEntity.created(
             URI.create("/stores/store/${storeService.registerStore(memberPrincipal, request)}")

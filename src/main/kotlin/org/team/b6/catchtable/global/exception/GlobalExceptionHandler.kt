@@ -3,6 +3,8 @@ package org.team.b6.catchtable.global.exception
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.FieldError
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.team.b6.catchtable.global.dto.ErrorResponse
@@ -68,6 +70,20 @@ class GlobalExceptionHandler(
                 httpStatus = "401 Unauthorized",
                 message = e.message.toString(),
                 path = httpServletRequest.requestURI
+            )
+        )
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "401 Bad Request",
+                message = e.bindingResult.allErrors.toMutableList().first().defaultMessage!!,
+                path = httpServletRequest.requestURI.toString(),
+                errorContent = e.bindingResult.allErrors.toMutableList().first().let {
+                    it as FieldError
+                    it.field
+                }
             )
         )
 }
