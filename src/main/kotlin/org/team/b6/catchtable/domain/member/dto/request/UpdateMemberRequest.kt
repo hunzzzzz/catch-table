@@ -8,6 +8,7 @@ data class UpdateMemberRequest(
     val name: String,
     val email: String,
     val password: String,
+    val confirmPassword: String? = null,
 ){
     //fun to()= Member(role,nickname,name,email,password)
 }

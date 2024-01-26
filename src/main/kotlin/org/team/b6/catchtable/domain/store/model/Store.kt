@@ -1,8 +1,10 @@
 package org.team.b6.catchtable.domain.store.model
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import jakarta.persistence.*
 import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.global.entity.BaseEntity
+import java.time.LocalTime
 
 @Entity
 @Table(name = "Stores")
@@ -25,6 +27,14 @@ class Store(
 
     @Column(name = "address", nullable = false)
     var address: String,
+
+    @Column(name = "open_time", columnDefinition = "TIMESTAMP(6)", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
+    var openTime: LocalTime,
+
+    @Column(name = "close_time", columnDefinition = "TIMESTAMP(6)", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
+    var closeTime: LocalTime
 ) : BaseEntity() {
     @Id
     @Column(name = "store_id")

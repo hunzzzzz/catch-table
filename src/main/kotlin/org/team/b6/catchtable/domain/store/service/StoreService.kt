@@ -4,6 +4,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.team.b6.catchtable.domain.member.repository.MemberRepository
 import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
 import org.team.b6.catchtable.domain.store.model.StoreCategory
@@ -18,14 +19,15 @@ import org.team.b6.catchtable.global.variable.Variables
 @Service
 @Transactional
 class StoreService(
-    private val storeRepository: StoreRepository
+    private val storeRepository: StoreRepository,
+    private val memberRepository: MemberRepository
 ) {
     // 카테고리 별 식당 전체 조회
     fun findAllStoresByCategory(category: String) =
         storeRepository.findAllByCategory(
             category = getCategory(category)
         ).filter { availableToReservation(it.status) }
-            .map { StoreResponse.from(it) }
+            .map { StoreResponse.from(it, getMember(it.belongTo)) }
 
     // 카테고리와 정렬 조건을 사용하여 식당 전체 조회
     fun findAllStoresByCategoryWithSortCriteria(category: String, direction: Sort.Direction, criteria: String) =
@@ -33,10 +35,13 @@ class StoreService(
             category = getCategory(category),
             sort = Sort.by(direction, getCriteria(criteria))
         ).filter { availableToReservation(it.status) }
-            .map { StoreResponse.from(it) }
+            .map { StoreResponse.from(it, getMember(it.belongTo)) }
 
     // 식당 단일 조회
-    fun findStore(storeId: Long) = StoreResponse.from(getStore(storeId))
+    fun findStore(storeId: Long) =
+        getStore(storeId).let {
+            StoreResponse.from(it, getMember(it.belongTo))
+        }
 
     // 식당 등록
     fun registerStore(memberPrincipal: MemberPrincipal, request: StoreRequest) =
@@ -68,6 +73,9 @@ class StoreService(
                     throw Exception("") // TODO : Exception 이름 미정
                 else it
             }
+
+    private fun getMember(memberId: Long) =
+        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("멤버")
 
     private fun validateNameAndAddress(name: String, address: String) {
         if (storeRepository.existsByName(name))

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.team.b6.catchtable.domain.member.dto.request.LoginRequest
 import org.team.b6.catchtable.domain.member.dto.request.SignupMemberRequest
+import org.team.b6.catchtable.domain.member.dto.request.UpdateMemberRequest
 import org.team.b6.catchtable.domain.member.dto.response.LoginResponse
 import org.team.b6.catchtable.domain.member.dto.response.MemberResponse
 import org.team.b6.catchtable.domain.member.model.Member
@@ -29,10 +30,10 @@ class MemberService(
         isValidNickname(request.nickname)
 //        isValidPassword(request.password)
 
-        if (memberRepository.existsByEmail(request.email)){
+        if (memberRepository.existsByEmail(request.email)) {
             throw IllegalStateException("Email is already in use")
         }
-        if (memberRepository.existsByNickname(request.nickname)){
+        if (memberRepository.existsByNickname(request.nickname)) {
             throw IllegalStateException("Nickname is already in use")
         }
         return memberRepository.save(
@@ -64,7 +65,29 @@ class MemberService(
             )
         )
     }
+    fun updateMember(request: UpdateMemberRequest): MemberResponse {
+        val foundMember = memberRepository.findByEmail(request.email) ?: throw ModelNotFoundException("member")
 
+        if (foundMember.nickname != request.nickname && memberRepository.existsByNickname(request.nickname)) {
+            throw IllegalStateException("Nickname is already in use")
+        }
+
+        if (!passwordEncoder.matches(request.password, foundMember.password)) {
+            if (request.confirmPassword == null || !passwordEncoder.matches(
+                    request.password,
+                    request.confirmPassword
+                )
+            ) {
+                throw IllegalArgumentException("Passwords do not match")
+            }
+            foundMember.password = passwordEncoder.encode(request.password)
+        }
+
+        foundMember.nickname = request.nickname
+        foundMember.name = request.name
+
+        return MemberResponse.from(foundMember)
+    }
 
     fun getMemberList(): List<MemberResponse> {
         val memberList = memberRepository.findAll().map { MemberResponse.from(it) }
@@ -86,15 +109,13 @@ class MemberService(
             throw IllegalArgumentException("Invalid nickname")
         }
     }
-
-//    fun isValidPassword(password: String?): Boolean {
-//        val trimmedPassword = password?.trim().toString()
-//        val exp = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).{8,15}$")
-//        if (!trimmedPassword.isNullOrEmpty() && exp.matches(trimmedPassword)) {
-//            return true
-//        } else {
-//            throw IllegalArgumentException("Invalid password")
-//        }
-//    }
+    fun isValidPassword(password: String?): Boolean {
+        val trimmedPassword = password?.trim().toString()
+        val exp = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).{8,15}$")
+        if (!trimmedPassword.isNullOrEmpty() && exp.matches(trimmedPassword)) {
+            return true
+        } else {
+            throw IllegalArgumentException("Invalid password")
+        }
+    }
 }
-

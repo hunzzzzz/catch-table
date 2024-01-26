@@ -1,6 +1,7 @@
 package org.team.b6.catchtable.domain.member.dto.request
 
 import jakarta.validation.constraints.Pattern
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.member.model.MemberRole
 
@@ -14,5 +15,6 @@ data class SignupMemberRequest(
         message = "비밀번호는 영어 소문자와 대문자, 숫자, 특수문자(@#$%^&+=)로 이루어져 있어야 합니다.")
     val password: String,
 ) {
-    //fun to() = Member(MemberRole.valueOf(role), nickname, name, email, password)
+    fun to(passwordEncoder: PasswordEncoder) =
+        Member(MemberRole.valueOf(role!!), nickname, name, email, passwordEncoder.encode(password))
 }

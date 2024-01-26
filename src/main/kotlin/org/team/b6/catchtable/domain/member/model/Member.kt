@@ -11,16 +11,16 @@ class Member(
     val role: MemberRole,
 
     @Column(name = "name", nullable = false)
-    val name: String,
+    var name: String,
 
     @Column(name = "nickname", nullable = false)
-    val nickname: String,
+    var nickname: String,
 
     @Column(name = "email", nullable = false)
     val email: String,
 
     @Column(name = "password", nullable = false)
-    val password: String
+    var password: String
 ) : BaseEntity() {
     @Id
     @Column(name = "member_id")
