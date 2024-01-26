@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Range
 import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.model.StoreCategory
-import org.team.b6.catchtable.domain.store.model.TimeTable
+//import org.team.b6.catchtable.domain.store.model.TimeTable
 import org.team.b6.catchtable.global.aop.ValidCategory
 
 data class StoreRequest(
@@ -58,6 +58,6 @@ data class StoreRequest(
         address = address,
         openTime = openTime,
         closeTime = closeTime,
-        timeTable = TimeTable()
+//        timeTable = TimeTable()
     )
 }
