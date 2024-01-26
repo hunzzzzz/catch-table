@@ -14,10 +14,8 @@ data class StoreResponse(
     val description: String,
     val phone: String,
     val address: String,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
-    val openTime: LocalTime,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
-    val closeTime: LocalTime,
+    val openTime: String,
+    val closeTime: String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     val createdAt: LocalDateTime
 ) {
@@ -29,8 +27,8 @@ data class StoreResponse(
             description = store.description,
             phone = store.phone,
             address = store.address,
-            openTime = store.openTime,
-            closeTime = store.closeTime,
+            openTime = "${store.openTime}시",
+            closeTime = "${store.closeTime}시",
             createdAt = store.createdAt
         )
     }

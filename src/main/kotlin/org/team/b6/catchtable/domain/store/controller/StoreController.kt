@@ -1,7 +1,6 @@
 package org.team.b6.catchtable.domain.store.controller
 
 import jakarta.validation.Valid
-import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
