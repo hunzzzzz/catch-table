@@ -5,6 +5,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.team.b6.catchtable.domain.member.repository.MemberRepository
+import org.team.b6.catchtable.domain.reservation.repository.ReservationRepository
 import org.team.b6.catchtable.domain.store.dto.request.StoreRequest
 import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
 import org.team.b6.catchtable.domain.store.model.StoreCategory
@@ -20,21 +21,33 @@ import org.team.b6.catchtable.global.variable.Variables
 @Transactional
 class StoreService(
     private val storeRepository: StoreRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val reservationRepository: ReservationRepository
 ) {
     // 카테고리 별 식당 전체 조회
     fun findAllStoresByCategory(category: String) =
-        storeRepository.findAllByCategory(
-            category = getCategory(category)
-        ).filter { availableToReservation(it.status) }
+        storeRepository.findAllByCategory(getCategory(category))
+            .filter { availableToReservation(it.status) }
             .map { StoreResponse.from(it, getMember(it.belongTo)) }
 
     // 카테고리와 정렬 조건을 사용하여 식당 전체 조회
-    fun findAllStoresByCategoryWithSortCriteria(category: String, direction: Sort.Direction, criteria: String) =
-        storeRepository.findAllByCategory(
-            category = getCategory(category),
-            sort = Sort.by(direction, getCriteria(criteria))
-        ).filter { availableToReservation(it.status) }
+    fun findAllStoresByCategoryWithSortCriteria(category: String, criteria: String) =
+        when (criteria) {
+//            "name" -> sortByName(category, direction)
+            "reservation" -> sortByNumberOfReservations(category)
+            else -> throw InvalidStoreSearchingValuesException("criteria")
+        }
+
+//    // 카테고리와 정렬 조건을 사용하여 식당 전체 조회
+//    private fun sortByName(category: String, direction: Sort.Direction) =
+//        storeRepository.findAllByCategory(getCategory(category), Sort.by(direction, "name"))
+//            .filter { availableToReservation(it.status) }
+//            .map { StoreResponse.from(it, getMember(it.belongTo)) }
+
+    private fun sortByNumberOfReservations(category: String) =
+        storeRepository.findAllByCategory(getCategory(category))
+            .filter { availableToReservation(it.status) }
+            .sortedByDescending { reservationRepository.findAll().count { reservation -> reservation.store.id == it.id } }
             .map { StoreResponse.from(it, getMember(it.belongTo)) }
 
     // 식당 단일 조회
@@ -61,10 +74,6 @@ class StoreService(
     private fun getCategory(category: String) =
         StoreCategory.entries.firstOrNull { it.name == category.uppercase() }
             ?: throw InvalidStoreSearchingValuesException("category")
-
-    private fun getCriteria(criteria: String) =
-        Variables.CRITERIA_LIST.firstOrNull { it == criteria }
-            ?: throw InvalidStoreSearchingValuesException("criteria")
 
     private fun getStore(storeId: Long) =
         (storeRepository.findByIdOrNull(storeId) ?: throw ModelNotFoundException("식당"))
