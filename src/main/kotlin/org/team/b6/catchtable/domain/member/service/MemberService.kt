@@ -28,7 +28,7 @@ class MemberService(
 
     fun signUp(request: SignupMemberRequest): MemberResponse {
         isValidNickname(request.nickname)
-        isValidPassword(request.password)
+//        isValidPassword(request.password)
 
         if (memberRepository.existsByEmail(request.email)) {
             throw IllegalStateException("Email is already in use")
@@ -109,7 +109,6 @@ class MemberService(
             throw IllegalArgumentException("Invalid nickname")
         }
     }
-
     fun isValidPassword(password: String?): Boolean {
         val trimmedPassword = password?.trim().toString()
         val exp = Regex("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).{8,15}$")
@@ -119,7 +118,4 @@ class MemberService(
             throw IllegalArgumentException("Invalid password")
         }
     }
-
-
-
 }
