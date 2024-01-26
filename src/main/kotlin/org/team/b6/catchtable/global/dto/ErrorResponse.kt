@@ -2,7 +2,6 @@ package org.team.b6.catchtable.global.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.apache.commons.lang3.mutable.Mutable
 import java.time.LocalDateTime
 
 data class ErrorResponse(
