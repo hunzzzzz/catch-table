@@ -23,12 +23,10 @@ class AdminService(
     private val reviewRepository: ReviewRepository
 ) {
     // ADMIN이 처리해야 하는 요구사항들을 조회
-    @PreAuthorize("hasRole('ADMIN')")
     fun findAllStoreRequirements() =
         globalService.getAllStores().filter { unavailableToReservation(it.status) }
 
     // OWNER의 요구사항들을 승인 혹은 거절
-    @PreAuthorize("hasRole('ADMIN')")
     fun handleRequirement(storeId: Long, isAccepted: Boolean) =
         globalService.getStore(storeId).let {
             when (it.status) {
@@ -69,7 +67,6 @@ class AdminService(
         }
 
     // TODO: 추후 삭제 (테스트용)
-    @PreAuthorize("hasRole('ADMIN')")
     fun registerAdmin(request: SignupMemberRequest) =
         memberRepository.save(request.to(passwordEncoder))
 
