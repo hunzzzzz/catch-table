@@ -2,7 +2,6 @@ package org.team.b6.catchtable.domain.review.service
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.team.b6.catchtable.domain.member.model.MemberRole
 import org.team.b6.catchtable.domain.review.dto.request.ReviewRequest
 import org.team.b6.catchtable.domain.review.dto.response.ReviewResponse
 import org.team.b6.catchtable.domain.review.model.Review
@@ -72,9 +71,8 @@ class ReviewService(
         if (review.member.id != memberId) throw InvalidRoleException("Update Review")
     }
 
-    // 리뷰 삭제가 가능한지 확인 (해당 리뷰를 USER 본인이 작성했는지, but ADMIN인 경우 제외)
+    // 리뷰 수정이 가능한지 확인 (해당 리뷰를 본인이 작성했는지)
     private fun availableToDeleteComment(review: Review, memberId: Long) {
-        if (globalService.getMember(memberId).role == MemberRole.USER && review.member.id != memberId)
-            throw InvalidRoleException("Delete Review")
+        if (review.member.id != memberId) throw InvalidRoleException("Delete Review")
     }
 }

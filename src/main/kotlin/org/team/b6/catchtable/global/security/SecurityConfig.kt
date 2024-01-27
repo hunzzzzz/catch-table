@@ -40,7 +40,8 @@ class SecurityConfig(
                     "/images/**",
                     "/index.html",
                     "/signup.html",
-                    "/error"
+                    "/error",
+                    "/admins/signup" // TODO : 추후 삭제
                 ).permitAll()
                     .anyRequest().authenticated()
             }
