@@ -93,6 +93,16 @@ class GlobalExceptionHandler(
             )
         )
 
+    @ExceptionHandler(ReservationDeniedException::class)
+    fun handleReservationDeniedException(e: ReservationDeniedException) =
+        ResponseEntity.badRequest().body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException) =
         ResponseEntity.badRequest().body(
