@@ -35,7 +35,8 @@ class SecurityConfig(
                     "/members/signup",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/error"
+                    "/error",
+                    "/admins/signup" // TODO : 추후 삭제
                 ).permitAll()
                     .anyRequest().authenticated()
             }

@@ -8,27 +8,32 @@ import org.team.b6.catchtable.domain.member.service.AdminService
 
 @RestController
 @RequestMapping("/admins")
+@PreAuthorize("hasRole('ADMIN')")
 class AdminController(
     private val adminService: AdminService
 ) {
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/stores")
     fun findAllStoreRequirements() =
         ResponseEntity.ok().body(adminService.findAllStoreRequirements())
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/stores/{storeId}/success")
     fun acceptStoreRequirement(@PathVariable storeId: Long) =
-        ResponseEntity.ok().body(adminService.handleRequirement(storeId, true))
+        ResponseEntity.ok().body(adminService.handleStoreRequirement(storeId, true))
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/stores/{storeId}/fail")
     fun refuseStoreRequirement(@PathVariable storeId: Long) =
-        ResponseEntity.ok().body(adminService.handleRequirement(storeId, false))
+        ResponseEntity.ok().body(adminService.handleStoreRequirement(storeId, false))
+
+    @DeleteMapping("/reviews/{reviewId}/success")
+    fun acceptReviewRequirement(@PathVariable reviewId: Long) =
+        ResponseEntity.ok().body(adminService.handleReviewRequirement(reviewId, true))
+
+    @DeleteMapping("/reviews/{reviewId}/fail")
+    fun refuseReviewRequirement(@PathVariable reviewId: Long) =
+        ResponseEntity.ok().body(adminService.handleReviewRequirement(reviewId, false))
 
     // TODO: 추후 삭제 (테스트용)
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/signup")
     fun registerAdmin(@RequestBody request: SignupMemberRequest) {
         ResponseEntity.ok().body(adminService.registerAdmin(request))
     }
