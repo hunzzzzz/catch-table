@@ -93,8 +93,8 @@ class GlobalExceptionHandler(
             )
         )
 
-    @ExceptionHandler(ReservationDeniedException::class)
-    fun handleReservationDeniedException(e: ReservationDeniedException) =
+    @ExceptionHandler(StoreRequirementDeniedException::class)
+    fun handleStoreRequirementDeniedException(e: StoreRequirementDeniedException) =
         ResponseEntity.badRequest().body(
             ErrorResponse(
                 httpStatus = "400 Bad Request",

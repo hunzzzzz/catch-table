@@ -29,7 +29,13 @@ class AdminService(
     fun findAllStoreRequirements() =
         globalService.getAllStores()
             .filter { unavailableToReservation(it.status) }
-            .map { StoreResponse.from(it, globalService.getMember(it.belongTo), globalService.getAverageOfRatings(it.id!!)) }
+            .map {
+                StoreResponse.from(
+                    store = it,
+                    member = globalService.getMember(it.belongTo),
+                    reviews = globalService.getAllReviewsByStoreId(it.id!!)
+                        .map { review -> ReviewResponse.from(review) })
+            }
 
     // ADMIN이 처리해야 하는 리뷰 삭제 요구사항들을 조회
     fun findAllReviewDeleteRequirements() =
