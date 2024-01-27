@@ -6,6 +6,7 @@ class InvalidRoleException(value: String) :
             "Add Review" -> "해당 식당에 예약 이력이 없습니다."
             "Update Review" -> "해당 리뷰의 작성자만 리뷰 수정이 가능합니다."
             "Delete Review" -> "해당 리뷰의 작성자만 리뷰 삭제가 가능합니다."
+            "Require for Delete Review" -> "해당 식당의 소유자만 리뷰 삭제 요청이 가능합니다."
             else -> ""
         }
     )
