@@ -43,6 +43,8 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     // VALIDATION
     implementation("org.springframework.boot:spring-boot-starter-validation:3.2.2")
+    // THYMELEAF
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.2.2")
 }
 
 tasks.withType<KotlinCompile> {
