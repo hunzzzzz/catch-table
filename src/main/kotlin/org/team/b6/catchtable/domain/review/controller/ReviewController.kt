@@ -56,4 +56,14 @@ class ReviewController(
         reviewService.deleteReview(memberPrincipal, storeId, reviewId)
         return ResponseEntity.noContent().build()
     }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @PostMapping("/{reviewId}")
+    fun requireForDeleteReview(
+        @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
+        @PathVariable storeId: Long,
+        @PathVariable reviewId: Long
+    ) {
+        reviewService.requireForDeleteReview(memberPrincipal, storeId, reviewId)
+    }
 }

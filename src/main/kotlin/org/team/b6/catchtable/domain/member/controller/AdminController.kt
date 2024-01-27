@@ -16,6 +16,10 @@ class AdminController(
     fun findAllStoreRequirements() =
         ResponseEntity.ok().body(adminService.findAllStoreRequirements())
 
+    @GetMapping("/reviews")
+    fun findAllReviewDeleteRequirements() =
+        ResponseEntity.ok().body(adminService.findAllReviewDeleteRequirements())
+
     @PostMapping("/stores/{storeId}/success")
     fun acceptStoreRequirement(@PathVariable storeId: Long) =
         ResponseEntity.ok().body(adminService.handleStoreRequirement(storeId, true))
