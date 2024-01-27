@@ -10,7 +10,7 @@ import org.team.b6.catchtable.domain.review.repository.ReviewRepository
 import org.team.b6.catchtable.domain.store.model.StoreStatus
 import org.team.b6.catchtable.global.exception.EtiquetteException
 import org.team.b6.catchtable.global.exception.InvalidRoleException
-import org.team.b6.catchtable.global.exception.ReservationDeniedException
+import org.team.b6.catchtable.global.exception.StoreRequirementDeniedException
 import org.team.b6.catchtable.global.security.MemberPrincipal
 import org.team.b6.catchtable.global.service.GlobalService
 import org.team.b6.catchtable.global.variable.Variables
@@ -76,7 +76,7 @@ class ReviewService(
         if (!globalService.getAllReservations().any { it.store.id == storeId && it.member.id == memberId })
             throw InvalidRoleException("Add Review")
         else if (globalService.getStore(storeId).status != StoreStatus.OK)
-            throw ReservationDeniedException("review")
+            throw StoreRequirementDeniedException("review")
     }
 
     // 리뷰 수정이 가능한지 확인 (해당 리뷰를 본인이 작성했는지)
