@@ -31,6 +31,10 @@ class Store(
 
     @Column(name = "close_time", nullable = false)
     var closeTime: Int
+
+//    @JoinColumn(name = "time_table_id")
+//    @OneToOne(targetEntity = TimeTable::class, fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+//    var timeTable: TimeTable
 ) : BaseEntity() {
     @Id
     @Column(name = "store_id")

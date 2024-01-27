@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Range
 import org.team.b6.catchtable.domain.store.model.Store
 import org.team.b6.catchtable.domain.store.model.StoreCategory
+//import org.team.b6.catchtable.domain.store.model.TimeTable
 import org.team.b6.catchtable.global.aop.ValidCategory
 
 data class StoreRequest(
@@ -34,9 +35,9 @@ data class StoreRequest(
 
     @NotNull
     @field:Range(
-        min = 5,
+        min = 8,
         max = 23,
-        message = "0부터 24까지의 숫자만 입력 가능합니다."
+        message = "8부터 23까지의 숫자만 입력 가능합니다."
     )
     val openTime: Int,
 
@@ -44,7 +45,7 @@ data class StoreRequest(
     @field:Range(
         min = 12,
         max = 23,
-        message = "0부터 24까지의 숫자만 입력 가능합니다."
+        message = "12부터 23까지의 숫자만 입력 가능합니다."
     )
     val closeTime: Int
 ) {
@@ -57,5 +58,6 @@ data class StoreRequest(
         address = address,
         openTime = openTime,
         closeTime = closeTime
+//        timeTable = TimeTable()
     )
 }
