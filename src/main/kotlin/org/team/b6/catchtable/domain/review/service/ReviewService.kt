@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.team.b6.catchtable.domain.review.dto.request.ReviewRequest
 import org.team.b6.catchtable.domain.review.dto.response.ReviewResponse
 import org.team.b6.catchtable.domain.review.model.Review
+import org.team.b6.catchtable.domain.review.model.ReviewStatus
 import org.team.b6.catchtable.domain.review.repository.ReviewRepository
 import org.team.b6.catchtable.domain.store.model.StoreStatus
 import org.team.b6.catchtable.global.exception.EtiquetteException
@@ -56,6 +57,14 @@ class ReviewService(
             reviewRepository.delete(it)
         }
 
+    // 리뷰 삭제 요청 (OWNER)
+    fun requireForDeleteReview(memberPrincipal: MemberPrincipal, storeId: Long, reviewId: Long) {
+        globalService.getReview(reviewId).let {
+            validateOwner(it, memberPrincipal.id)
+            it.updateStatus(ReviewStatus.REQUIRED_FOR_DELETE)
+        }
+    }
+
     // 리뷰 내용에 욕설이 포함된 경우 등록 불가
     private fun validateContent(content: String) {
         if (Variables.BANNED_WORD_LIST.any { content.contains(it) })
@@ -78,5 +87,10 @@ class ReviewService(
     // 리뷰 수정이 가능한지 확인 (해당 리뷰를 본인이 작성했는지)
     private fun availableToDeleteComment(review: Review, memberId: Long) {
         if (review.member.id != memberId) throw InvalidRoleException("Delete Review")
+    }
+
+    // 리뷰 삭제 요청이 가능한지 확인 (요청의 주체가 리뷰가 달린 식당의 주인인지)
+    private fun validateOwner(review: Review, memberId: Long) {
+        if (review.member.id != memberId) throw InvalidRoleException("Require for Delete Review")
     }
 }

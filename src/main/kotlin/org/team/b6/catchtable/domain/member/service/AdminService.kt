@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.team.b6.catchtable.domain.member.dto.request.SignupMemberRequest
 import org.team.b6.catchtable.domain.member.repository.MemberRepository
+import org.team.b6.catchtable.domain.review.dto.response.ReviewResponse
 import org.team.b6.catchtable.domain.review.model.Review
+import org.team.b6.catchtable.domain.review.model.ReviewStatus
 import org.team.b6.catchtable.domain.review.repository.ReviewRepository
+import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
 import org.team.b6.catchtable.domain.store.model.StoreStatus
 import org.team.b6.catchtable.global.service.GlobalService
 import org.team.b6.catchtable.global.variable.Variables
@@ -24,7 +27,15 @@ class AdminService(
 ) {
     // ADMIN이 처리해야 하는 요구사항들을 조회
     fun findAllStoreRequirements() =
-        globalService.getAllStores().filter { unavailableToReservation(it.status) }
+        globalService.getAllStores()
+            .filter { unavailableToReservation(it.status) }
+            .map { StoreResponse.from(it, globalService.getMember(it.belongTo)) }
+
+    // ADMIN이 처리해야 하는 리뷰 삭제 요구사항들을 조회
+    fun findAllReviewDeleteRequirements() =
+        globalService.getAllReviews()
+            .filter { it.status == ReviewStatus.REQUIRED_FOR_DELETE }
+            .map { ReviewResponse.from(it) }
 
     // 식당 관련 요구사항들을 승인 혹은 거절 (식당 등록 및 삭제 요청)
     fun handleStoreRequirement(storeId: Long, isAccepted: Boolean) =
