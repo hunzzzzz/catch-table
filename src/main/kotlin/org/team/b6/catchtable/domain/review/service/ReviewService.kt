@@ -6,8 +6,10 @@ import org.team.b6.catchtable.domain.review.dto.request.ReviewRequest
 import org.team.b6.catchtable.domain.review.dto.response.ReviewResponse
 import org.team.b6.catchtable.domain.review.model.Review
 import org.team.b6.catchtable.domain.review.repository.ReviewRepository
+import org.team.b6.catchtable.domain.store.model.StoreStatus
 import org.team.b6.catchtable.global.exception.EtiquetteException
 import org.team.b6.catchtable.global.exception.InvalidRoleException
+import org.team.b6.catchtable.global.exception.ReservationDeniedException
 import org.team.b6.catchtable.global.security.MemberPrincipal
 import org.team.b6.catchtable.global.service.GlobalService
 import org.team.b6.catchtable.global.variable.Variables
@@ -20,7 +22,7 @@ class ReviewService(
 ) {
     // 전체 리뷰 조회
     fun findReviews(storeId: Long) =
-        globalService.getAllReviews().filter { it.store.id == storeId }
+        globalService.getAllReviews().filter { it.store.id == storeId }.map { ReviewResponse.from(it) }
 
     // 단일 리뷰 조회
     fun findReview(storeId: Long, reviewId: Long) =
@@ -60,10 +62,12 @@ class ReviewService(
             throw EtiquetteException()
     }
 
-    // 리뷰 등록이 가능한지 확인 (해당 식당에 예약 이력이 있는지)
+    // 리뷰 등록이 가능한지 확인 (해당 식당에 예약 이력이 있는지 + 식당이 예약 가능한 상태인지)
     private fun availableToAddComment(memberId: Long, storeId: Long) {
         if (!globalService.getAllReservations().any { it.store.id == storeId && it.member.id == memberId })
             throw InvalidRoleException("Add Review")
+        else if (globalService.getStore(storeId).status != StoreStatus.OK)
+            throw ReservationDeniedException("review")
     }
 
     // 리뷰 수정이 가능한지 확인 (해당 리뷰를 본인이 작성했는지)
