@@ -38,4 +38,12 @@ class GlobalService(
 
     fun getReservation(reservationId: Long) =
         reservationRepository.findByIdOrNull(reservationId) ?: throw ModelNotFoundException("예약")
+
+    // Store의 평균 평점 계산
+    fun getAverageOfRatings(storeId: Long) =
+        reviewRepository.getAllByStoreId(storeId).let {
+            Math.round(
+                it.sumOf { review -> review.ratings } / it.size.toDouble() * 10
+            ) / 10.0
+        }
 }
