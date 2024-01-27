@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 data class StoreResponse(
     val name: String,
     val owner: String,
+    var averageRatings: Double,
     val category: StoreCategory,
     val description: String,
     val phone: String,
@@ -19,9 +20,10 @@ data class StoreResponse(
     val createdAt: LocalDateTime
 ) {
     companion object {
-        fun from(store: Store, member: Member) = StoreResponse(
+        fun from(store: Store, member: Member, averageRatings: Double) = StoreResponse(
             name = store.name,
             owner = member.name,
+            averageRatings = averageRatings,
             category = store.category,
             description = store.description,
             phone = store.phone,
