@@ -67,7 +67,7 @@ class ReviewService(
         if (!globalService.getAllReservations().any { it.store.id == storeId && it.member.id == memberId })
             throw InvalidRoleException("Add Review")
         else if (globalService.getStore(storeId).status != StoreStatus.OK)
-            throw ReservationDeniedException()
+            throw ReservationDeniedException("review")
     }
 
     // 리뷰 수정이 가능한지 확인 (해당 리뷰를 본인이 작성했는지)
