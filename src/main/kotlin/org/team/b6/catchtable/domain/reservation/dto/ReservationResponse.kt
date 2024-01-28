@@ -6,7 +6,7 @@ data class ReservationResponse(
     val id: Long,
     val memberName: String,
     val store: String,
-    val time: LocalDateTime,
+    val time: Int,
     val party: String,
     val createdAt: LocalDateTime,
     val status: String,

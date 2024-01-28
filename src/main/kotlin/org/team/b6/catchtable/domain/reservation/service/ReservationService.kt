@@ -16,6 +16,8 @@ interface ReservationService {
 
     fun storeReservationList(memberPrincipal: MemberPrincipal): List<ReservationResponse>
 
+    fun storeReservationListByTime(memberPrincipal: MemberPrincipal): String
+
     fun cancelReservation(reservationId: Long, memberPrincipal: MemberPrincipal): String
 
     fun confirmReservation(reservationId: Long, memberPrincipal: MemberPrincipal): String

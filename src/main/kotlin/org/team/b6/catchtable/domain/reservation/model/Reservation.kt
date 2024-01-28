@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 @Table(name = "Reservations")
 class Reservation(
     @Column(name = "time", nullable = false)
-    val time: LocalDateTime,
+    val time: Int,
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP(6)", nullable = false, updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
@@ -62,4 +62,8 @@ fun Reservation.toResponse(): ReservationResponse {
         status = status.name,
 
         )
+}
+
+fun checkTime(time: Int, open: Int, close: Int){
+    if (time !in open until close) throw IllegalArgumentException("영업시간이 아닙니다.")
 }
