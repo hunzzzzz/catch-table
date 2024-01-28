@@ -5,13 +5,13 @@
 //import org.springframework.transaction.annotation.Transactional
 //import org.team.b6.catchtable.domain.store.dto.request.TimeTableRequest
 //import org.team.b6.catchtable.domain.store.repository.TimeTableRepository
-//import org.team.b6.catchtable.global.service.GlobalService
+//import org.team.b6.catchtable.global.service.FindingEntityService
 //
 //@Service
 //@Transactional
 //class TimeTableService(
 //    val timeTableRepository: TimeTableRepository,
-//    val globalService: GlobalService
+//    val globalService: FindingEntityService
 //) {
 //    // 초기 타임 테이블 세팅
 //    fun setTimeTable(storeId: Long, request: TimeTableRequest) {
