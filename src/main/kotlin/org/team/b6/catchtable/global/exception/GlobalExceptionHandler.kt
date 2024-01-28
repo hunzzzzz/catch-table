@@ -93,6 +93,26 @@ class GlobalExceptionHandler(
             )
         )
 
+    @ExceptionHandler(StoreRequirementDeniedException::class)
+    fun handleStoreRequirementDeniedException(e: StoreRequirementDeniedException) =
+        ResponseEntity.badRequest().body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
+    @ExceptionHandler(BannedUserException::class)
+    fun handleBannedUserException(e: BannedUserException) =
+        ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+            ErrorResponse(
+                httpStatus = "403 Forbidden",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException) =
         ResponseEntity.badRequest().body(

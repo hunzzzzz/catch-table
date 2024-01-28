@@ -14,17 +14,17 @@ import java.net.URI
 class ReviewController(
     private val reviewService: ReviewService
 ) {
-    @PreAuthorize("hasRole('USER') && hasRole('OWNER') && hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') || hasRole('OWNER') || hasRole('ADMIN')")
     @GetMapping
     fun findReviews(@PathVariable storeId: Long) =
         ResponseEntity.ok().body(reviewService.findReviews(storeId))
 
-    @PreAuthorize("hasRole('USER') && hasRole('OWNER') && hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') || hasRole('OWNER') || hasRole('ADMIN')")
     @GetMapping("/{reviewId}")
     fun findReview(@PathVariable storeId: Long, @PathVariable reviewId: Long) =
         ResponseEntity.ok().body(reviewService.findReview(storeId, reviewId))
 
-    @PreAuthorize("hasRole('USER') && hasRole('OWNER')")
+    @PreAuthorize("hasRole('USER') || hasRole('OWNER')")
     @PostMapping
     fun addReview(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
@@ -37,7 +37,7 @@ class ReviewController(
             )
         ).build()
 
-    @PreAuthorize("hasRole('USER') && hasRole('OWNER')")
+    @PreAuthorize("hasRole('USER') || hasRole('OWNER')")
     @PutMapping("/{reviewId}")
     fun updateReview(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
@@ -46,7 +46,7 @@ class ReviewController(
         @RequestBody request: ReviewRequest
     ) = ResponseEntity.ok().body(reviewService.updateReview(memberPrincipal, storeId, reviewId, request))
 
-    @PreAuthorize("hasRole('USER') && hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{reviewId}")
     fun deleteReview(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
@@ -55,5 +55,15 @@ class ReviewController(
     ): ResponseEntity<Unit> {
         reviewService.deleteReview(memberPrincipal, storeId, reviewId)
         return ResponseEntity.noContent().build()
+    }
+
+    @PreAuthorize("hasRole('OWNER')")
+    @PostMapping("/{reviewId}")
+    fun requireForDeleteReview(
+        @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
+        @PathVariable storeId: Long,
+        @PathVariable reviewId: Long
+    ) {
+        reviewService.requireForDeleteReview(memberPrincipal, storeId, reviewId)
     }
 }

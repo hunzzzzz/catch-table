@@ -13,6 +13,7 @@ import org.team.b6.catchtable.domain.member.dto.response.LoginResponse
 import org.team.b6.catchtable.domain.member.dto.response.MemberResponse
 import org.team.b6.catchtable.domain.member.service.MemberService
 import org.team.b6.catchtable.global.security.MemberPrincipal
+import java.net.URI
 
 @RestController
 @RequestMapping("/members")
@@ -21,9 +22,9 @@ class MemberController(
 ) {
 
     @PostMapping("/signup")
-    fun signup(@RequestBody @Valid signupMemberRequest: SignupMemberRequest): ResponseEntity<MemberResponse> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
+
+    fun signup(@RequestBody @Valid signupMemberRequest: SignupMemberRequest): ResponseEntity<MemberResponse>{
+        return ResponseEntity.created(URI.create("/members/login.html"))
             .body(memberService.signUp(signupMemberRequest))
     }
 

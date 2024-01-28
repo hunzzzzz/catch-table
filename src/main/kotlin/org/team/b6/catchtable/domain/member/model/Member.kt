@@ -2,6 +2,7 @@ package org.team.b6.catchtable.domain.member.model
 
 import jakarta.persistence.*
 import org.team.b6.catchtable.global.entity.BaseEntity
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "Members")
@@ -23,11 +24,20 @@ class Member(
     var password: String,
 
     @Column(name = "is_deleted", nullable = false)
-    var isDeleted: Boolean = false
-
+    var isDeleted: Boolean = false,
 ) : BaseEntity() {
     @Id
     @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    @Column(name = "number_of_warnings", nullable = false)
+    var numberOfWarnings: Int = 0 // 경고 누적 횟수
+
+    @Column(name = "banned_expiration")
+    var bannedExpiration: LocalDateTime? = null // 계정 정지 만료일
+
+    fun liftSuspension() {
+        this.bannedExpiration = null
+    }
 }

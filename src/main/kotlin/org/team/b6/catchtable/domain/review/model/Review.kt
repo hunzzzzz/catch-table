@@ -28,8 +28,15 @@ class Review(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
+    @Column(name = "status")
+    var status = ReviewStatus.OK
+
     fun update(request: ReviewRequest) {
         this.content = request.content
         this.ratings = request.ratings
+    }
+
+    fun updateStatus(status: ReviewStatus) {
+        this.status = status
     }
 }
