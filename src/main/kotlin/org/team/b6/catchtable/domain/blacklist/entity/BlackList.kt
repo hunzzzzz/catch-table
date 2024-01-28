@@ -26,7 +26,6 @@ class BlackList(
         member.numberOfWarnings++
         if (member.numberOfWarnings % 3 == 0){
             member.bannedExpiration = LocalDateTime.now().plusDays(7)
-//            member.role = MemberRole.BANNED
             utilService.sendMail(
                 email = member.email,
                 subject = Variables.MAIL_SUBJECT_BANNED,
