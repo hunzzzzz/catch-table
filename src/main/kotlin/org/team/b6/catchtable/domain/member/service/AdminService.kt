@@ -1,5 +1,6 @@
 package org.team.b6.catchtable.domain.member.service
 
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -7,6 +8,7 @@ import org.team.b6.catchtable.domain.blacklist.entity.BlackList
 import org.team.b6.catchtable.domain.blacklist.entity.BlackListReason
 import org.team.b6.catchtable.domain.blacklist.repository.BlackListRepository
 import org.team.b6.catchtable.domain.member.dto.request.SignupMemberRequest
+import org.team.b6.catchtable.domain.member.dto.response.BannedMemberResponse
 import org.team.b6.catchtable.domain.member.repository.MemberRepository
 import org.team.b6.catchtable.domain.review.dto.response.ReviewResponse
 import org.team.b6.catchtable.domain.review.model.Review
@@ -14,29 +16,38 @@ import org.team.b6.catchtable.domain.review.model.ReviewStatus
 import org.team.b6.catchtable.domain.review.repository.ReviewRepository
 import org.team.b6.catchtable.domain.store.dto.response.StoreResponse
 import org.team.b6.catchtable.domain.store.model.StoreStatus
-import org.team.b6.catchtable.global.service.GlobalService
+import org.team.b6.catchtable.global.service.FindingEntityService
 import org.team.b6.catchtable.global.service.UtilService
 import org.team.b6.catchtable.global.variable.Variables
+import java.time.LocalDateTime
 
 @Service
 @Transactional
 class AdminService(
-    private val globalService: GlobalService,
+    private val findingEntityService: FindingEntityService,
     private val utilService: UtilService,
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder, // TODO : 추후 삭제 (테스트용)
     private val reviewRepository: ReviewRepository,
     private val blackListRepository: BlackListRepository
 ) {
+    // 계정 정지가 만료된 회원을 10초에 한 번씩 확인
+    @Scheduled(fixedDelay = 1000 * 10)
+    fun liftSuspension(){
+        findingEntityService.getAllMembers()
+            .filter { it.bannedExpiration != null && it.bannedExpiration!! < LocalDateTime.now()}
+            .map { it.liftSuspension() }
+    }
+
     // ADMIN이 처리해야 하는 요구사항들을 조회
     fun findAllStoreRequirements() =
-        globalService.getAllStores()
+        findingEntityService.getAllStores()
             .filter { unavailableToReservation(it.status) }
             .map {
                 StoreResponse.from(
                     store = it,
-                    member = globalService.getMember(it.belongTo),
-                    reviews = globalService.getAllReviews()
+                    member = findingEntityService.getMember(it.belongTo),
+                    reviews = findingEntityService.getAllReviews()
                         .filter { review -> review.store.id == it.id }
                         .map { review -> ReviewResponse.from(review) }
                 )
@@ -44,24 +55,38 @@ class AdminService(
 
     // ADMIN이 처리해야 하는 리뷰 삭제 요구사항들을 조회
     fun findAllReviewDeleteRequirements() =
-        globalService.getAllReviews()
+        findingEntityService.getAllReviews()
             .filter { it.status == ReviewStatus.REQUIRED_FOR_DELETE }
             .map { ReviewResponse.from(it) }
 
+    // 현재 계정이 정지된 USER 목록을 조회
+    fun findAllBannedMembers() =
+        findingEntityService.getAllMembers()
+            .filter { it.bannedExpiration != null && it.bannedExpiration!! > LocalDateTime.now() }
+            .map {
+                BannedMemberResponse.from(
+                    member = it,
+                    reasons = findingEntityService.getAllBlackLists()
+                        .filter { blacklist -> blacklist.subject == it.id }
+                        .map { blacklist -> blacklist.reason.name }
+                        .toSet().joinToString(" ")
+                )
+            }
+
     // 식당 관련 요구사항들을 승인 혹은 거절 (식당 등록 및 삭제 요청)
     fun handleStoreRequirement(storeId: Long, isAccepted: Boolean) =
-        globalService.getStore(storeId).let {
+        findingEntityService.getStore(storeId).let {
             when (it.status) {
                 StoreStatus.WAITING_FOR_CREATE -> {
                     if (isAccepted) {
                         utilService.sendMail(
-                            email = globalService.getMember(it.belongTo).email,
+                            email = findingEntityService.getMember(it.belongTo).email,
                             subject = Variables.MAIL_SUBJECT_ACCEPTED,
                             text = Variables.MAIL_CONTENT_STORE_CREATE_ACCEPTED
                         )
                         it.updateStatus(StoreStatus.OK)
                     } else utilService.sendMail(
-                        email = globalService.getMember(it.belongTo).email,
+                        email = findingEntityService.getMember(it.belongTo).email,
                         subject = Variables.MAIL_SUBJECT_REFUSED,
                         text = Variables.MAIL_CONTENT_STORE_CREATE_REFUSED
                     )
@@ -70,14 +95,14 @@ class AdminService(
                 StoreStatus.WAITING_FOR_DELETE -> {
                     if (isAccepted) {
                         utilService.sendMail(
-                            email = globalService.getMember(it.belongTo).email,
+                            email = findingEntityService.getMember(it.belongTo).email,
                             subject = Variables.MAIL_SUBJECT_ACCEPTED,
                             text = Variables.MAIL_CONTENT_STORE_DELETE_ACCEPTED
                         )
                         it.updateForDelete()
                         deleteAllComments(it.id!!)
                     } else utilService.sendMail(
-                        email = globalService.getMember(it.belongTo).email,
+                        email = findingEntityService.getMember(it.belongTo).email,
                         subject = Variables.MAIL_SUBJECT_REFUSED,
                         text = Variables.MAIL_CONTENT_STORE_DELETE_REFUSED
                     )
@@ -90,10 +115,10 @@ class AdminService(
 
     // 리뷰 관련 요구사항들을 승인 혹은 거절 (리뷰 삭제 요청)
     fun handleReviewRequirement(reviewId: Long, isAccepted: Boolean) {
-        val review = globalService.getReview(reviewId)
+        val review = findingEntityService.getReview(reviewId)
         if (isAccepted) {
             utilService.sendMail( // OWNER
-                email = globalService.getMember(review.store.belongTo).email,
+                email = findingEntityService.getMember(review.store.belongTo).email,
                 subject = Variables.MAIL_SUBJECT_ACCEPTED,
                 text = Variables.MAIL_CONTENT_REVIEW_DELETE_ACCEPTED
             )
@@ -111,7 +136,7 @@ class AdminService(
             reviewRepository.delete(review)
         } else {
             utilService.sendMail(
-                email = globalService.getMember(review.store.belongTo).email,
+                email = findingEntityService.getMember(review.store.belongTo).email,
                 subject = Variables.MAIL_SUBJECT_REFUSED,
                 text = Variables.MAIL_CONTENT_REVIEW_DELETE_REFUSED
             )

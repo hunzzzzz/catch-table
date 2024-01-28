@@ -103,6 +103,16 @@ class GlobalExceptionHandler(
             )
         )
 
+    @ExceptionHandler(BannedUserException::class)
+    fun handleBannedUserException(e: BannedUserException) =
+        ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+            ErrorResponse(
+                httpStatus = "403 Forbidden",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException) =
         ResponseEntity.badRequest().body(

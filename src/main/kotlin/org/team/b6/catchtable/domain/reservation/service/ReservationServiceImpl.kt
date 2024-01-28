@@ -3,6 +3,7 @@ package org.team.b6.catchtable.domain.reservation.service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.member.repository.MemberRepository
 import org.team.b6.catchtable.domain.reservation.dto.ReservationRequest
 import org.team.b6.catchtable.domain.reservation.dto.ReservationResponse
@@ -11,6 +12,7 @@ import org.team.b6.catchtable.domain.reservation.model.ReservationStatus
 import org.team.b6.catchtable.domain.reservation.model.toResponse
 import org.team.b6.catchtable.domain.reservation.repository.ReservationRepository
 import org.team.b6.catchtable.domain.store.repository.StoreRepository
+import org.team.b6.catchtable.global.exception.BannedUserException
 import org.team.b6.catchtable.global.exception.ModelNotFoundException
 import org.team.b6.catchtable.global.security.MemberPrincipal
 
@@ -29,6 +31,7 @@ class ReservationServiceImpl(
     ): ReservationResponse {
         val member = memberRepository.findByIdOrNull(memberPrincipal.id) ?: throw ModelNotFoundException("modelName")
         val store = storeRepository.findByIdOrNull(storeId) ?: throw ModelNotFoundException("modelName")
+        validateBannedExpiration(member)
         return reservationRepository.save(
             Reservation(
                 member = member,
@@ -101,4 +104,8 @@ class ReservationServiceImpl(
         }
     }
 
+    private fun validateBannedExpiration(member: Member) {
+        if (member.bannedExpiration != null)
+            throw BannedUserException(member.bannedExpiration!!)
+    }
 }

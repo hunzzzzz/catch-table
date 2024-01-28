@@ -32,8 +32,12 @@ class Member(
     val id: Long? = null
 
     @Column(name = "number_of_warnings", nullable = false)
-    var numberOfWarnings: Int = 0// 경고 누적 횟수
+    var numberOfWarnings: Int = 0 // 경고 누적 횟수
 
     @Column(name = "banned_expiration")
     var bannedExpiration: LocalDateTime? = null // 계정 정지 만료일
+
+    fun liftSuspension() {
+        this.bannedExpiration = null
+    }
 }
