@@ -35,7 +35,7 @@ class ReviewService(
         validateContent(request.content)
         reviewRepository.save(
             request.to(
-                member = globalService.getMember(request.memberId),
+                member = globalService.getMember(memberPrincipal.id),
                 store = globalService.getStore(storeId)
             )
         ).id
