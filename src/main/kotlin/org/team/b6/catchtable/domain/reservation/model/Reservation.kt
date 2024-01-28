@@ -54,8 +54,8 @@ class Reservation(
         status = ReservationStatus.Cancelled
     }
 
-    fun checkDate(reservationDate: LocalDate):Boolean{
-        val today= createdAt.toLocalDate()
+    fun checkDate(reservationDate: LocalDate): Boolean {
+        val today = createdAt.toLocalDate()
 
         return reservationDate.isAfter(today)
     }
@@ -71,10 +71,10 @@ fun Reservation.toResponse(): ReservationResponse {
         party = party,
         status = status.name,
         date = date
-        )
+    )
 }
 
-fun checkTime(time: Int, open: Int, close: Int):Boolean{
+fun checkTime(time: Int, open: Int, close: Int): Boolean {
     return time in open until close
 }
 

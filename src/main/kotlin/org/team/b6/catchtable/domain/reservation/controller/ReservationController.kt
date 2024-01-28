@@ -52,7 +52,7 @@ class ReservationController(
     fun storeReservationListByTime(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
         @RequestBody reservationRequest: ReservationRequest
-    ): ResponseEntity<String>{
+    ): ResponseEntity<String> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(reservationService.storeReservationListByTime(memberPrincipal, reservationRequest))

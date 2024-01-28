@@ -8,7 +8,7 @@ import org.team.b6.catchtable.domain.member.service.AdminService
 
 @RestController
 @RequestMapping("/admins")
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 class AdminController(
     private val adminService: AdminService
 ) {
@@ -19,6 +19,10 @@ class AdminController(
     @GetMapping("/reviews")
     fun findAllReviewDeleteRequirements() =
         ResponseEntity.ok().body(adminService.findAllReviewDeleteRequirements())
+
+    @GetMapping("/banned-members")
+    fun findAllBannedMembers() =
+        ResponseEntity.ok().body(adminService.findAllBannedMembers())
 
     @PostMapping("/stores/{storeId}/success")
     fun acceptStoreRequirement(@PathVariable storeId: Long) =

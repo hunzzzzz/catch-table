@@ -2,6 +2,8 @@ package org.team.b6.catchtable.global.service
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.team.b6.catchtable.domain.blacklist.entity.BlackList
+import org.team.b6.catchtable.domain.blacklist.repository.BlackListRepository
 import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.member.repository.MemberRepository
 import org.team.b6.catchtable.domain.reservation.model.Reservation
@@ -13,11 +15,12 @@ import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.ModelNotFoundException
 
 @Service
-class GlobalService(
+class FindingEntityService(
     private val memberRepository: MemberRepository,
     private val storeRepository: StoreRepository,
     private val reviewRepository: ReviewRepository,
-    private val reservationRepository: ReservationRepository
+    private val reservationRepository: ReservationRepository,
+    private val blackListRepository: BlackListRepository
 ) {
     fun getAllMembers(): MutableList<Member> = memberRepository.findAll()
 
@@ -31,8 +34,6 @@ class GlobalService(
 
     fun getAllReviews(): MutableList<Review> = reviewRepository.findAll()
 
-    fun getAllReviewsByStoreId(storeId: Long) = reviewRepository.getAllByStoreId(storeId)
-
     fun getReview(reviewId: Long) =
         reviewRepository.findByIdOrNull(reviewId) ?: throw ModelNotFoundException("리뷰")
 
@@ -40,4 +41,6 @@ class GlobalService(
 
     fun getReservation(reservationId: Long) =
         reservationRepository.findByIdOrNull(reservationId) ?: throw ModelNotFoundException("예약")
+
+    fun getAllBlackLists(): MutableList<BlackList> = blackListRepository.findAll()
 }

@@ -8,26 +8,27 @@ import org.team.b6.catchtable.domain.review.model.Review
 import org.team.b6.catchtable.domain.review.model.ReviewStatus
 import org.team.b6.catchtable.domain.review.repository.ReviewRepository
 import org.team.b6.catchtable.domain.store.model.StoreStatus
+import org.team.b6.catchtable.global.exception.BannedUserException
 import org.team.b6.catchtable.global.exception.EtiquetteException
 import org.team.b6.catchtable.global.exception.InvalidRoleException
 import org.team.b6.catchtable.global.exception.StoreRequirementDeniedException
 import org.team.b6.catchtable.global.security.MemberPrincipal
-import org.team.b6.catchtable.global.service.GlobalService
+import org.team.b6.catchtable.global.service.FindingEntityService
 import org.team.b6.catchtable.global.variable.Variables
 
 @Service
 @Transactional
 class ReviewService(
     private val reviewRepository: ReviewRepository,
-    private val globalService: GlobalService
+    private val findingEntityService: FindingEntityService
 ) {
     // 전체 리뷰 조회
     fun findReviews(storeId: Long) =
-        globalService.getAllReviews().filter { it.store.id == storeId }.map { ReviewResponse.from(it) }
+        findingEntityService.getAllReviews().filter { it.store.id == storeId }.map { ReviewResponse.from(it) }
 
     // 단일 리뷰 조회
     fun findReview(storeId: Long, reviewId: Long) =
-        ReviewResponse.from(globalService.getReview(reviewId))
+        ReviewResponse.from(findingEntityService.getReview(reviewId))
 
     // 리뷰 등록
     fun addReview(memberPrincipal: MemberPrincipal, storeId: Long, request: ReviewRequest) {
@@ -35,8 +36,8 @@ class ReviewService(
         validateContent(request.content)
         reviewRepository.save(
             request.to(
-                member = globalService.getMember(request.memberId),
-                store = globalService.getStore(storeId)
+                member = findingEntityService.getMember(memberPrincipal.id),
+                store = findingEntityService.getStore(storeId)
             )
         ).id
     }
@@ -44,7 +45,7 @@ class ReviewService(
     // 리뷰 수정
     fun updateReview(memberPrincipal: MemberPrincipal, storeId: Long, reviewId: Long, request: ReviewRequest) {
         validateContent(request.content)
-        globalService.getReview(reviewId).let {
+        findingEntityService.getReview(reviewId).let {
             availableToUpdateComment(it, memberPrincipal.id)
             it.update(request)
         }
@@ -52,14 +53,14 @@ class ReviewService(
 
     // 리뷰 삭제
     fun deleteReview(memberPrincipal: MemberPrincipal, storeId: Long, reviewId: Long) =
-        globalService.getReview(reviewId).let {
+        findingEntityService.getReview(reviewId).let {
             availableToDeleteComment(it, memberPrincipal.id)
             reviewRepository.delete(it)
         }
 
     // 리뷰 삭제 요청 (OWNER)
     fun requireForDeleteReview(memberPrincipal: MemberPrincipal, storeId: Long, reviewId: Long) {
-        globalService.getReview(reviewId).let {
+        findingEntityService.getReview(reviewId).let {
             validateOwner(it, memberPrincipal.id)
             it.updateStatus(ReviewStatus.REQUIRED_FOR_DELETE)
         }
@@ -71,12 +72,14 @@ class ReviewService(
             throw EtiquetteException()
     }
 
-    // 리뷰 등록이 가능한지 확인 (해당 식당에 예약 이력이 있는지 + 식당이 예약 가능한 상태인지)
+    // 리뷰 등록이 가능한지 확인 (해당 식당에 예약 이력이 있는지 + 식당이 예약 가능한 상태인지 + 계정 정지 여부 확인)
     private fun availableToAddComment(memberId: Long, storeId: Long) {
-        if (!globalService.getAllReservations().any { it.store.id == storeId && it.member.id == memberId })
+        if (!findingEntityService.getAllReservations().any { it.store.id == storeId && it.member.id == memberId })
             throw InvalidRoleException("Add Review")
-        else if (globalService.getStore(storeId).status != StoreStatus.OK)
+        else if (findingEntityService.getStore(storeId).status != StoreStatus.OK)
             throw StoreRequirementDeniedException("review")
+        else if (findingEntityService.getMember(memberId).bannedExpiration != null)
+            throw BannedUserException(findingEntityService.getMember(memberId).bannedExpiration!!)
     }
 
     // 리뷰 수정이 가능한지 확인 (해당 리뷰를 본인이 작성했는지)
@@ -91,6 +94,6 @@ class ReviewService(
 
     // 리뷰 삭제 요청이 가능한지 확인 (요청의 주체가 리뷰가 달린 식당의 주인인지)
     private fun validateOwner(review: Review, memberId: Long) {
-        if (review.member.id != memberId) throw InvalidRoleException("Require for Delete Review")
+        if (review.store.belongTo != memberId) throw InvalidRoleException("Require for Delete Review")
     }
 }
