@@ -28,6 +28,7 @@ class Reservation(
     val store: Store,
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     var status: ReservationStatus,
 
     @Column(name = "date", nullable = false)
