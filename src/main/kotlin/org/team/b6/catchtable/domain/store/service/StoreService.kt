@@ -29,7 +29,8 @@ class StoreService(
                 StoreResponse.from(
                     store = it,
                     member = globalService.getMember(it.belongTo),
-                    reviews = globalService.getAllReviewsByStoreId(it.id!!)
+                    reviews = globalService.getAllReviews()
+                        .filter { review -> review.store.id == it.id }
                         .map { review -> ReviewResponse.from(review) }
                 )
             }
@@ -48,7 +49,8 @@ class StoreService(
             StoreResponse.from(
                 store = it,
                 member = globalService.getMember(it.belongTo),
-                reviews = globalService.getAllReviewsByStoreId(it.id!!)
+                reviews = globalService.getAllReviews()
+                    .filter { review -> review.store.id == it.id }
                     .map { review -> ReviewResponse.from(review) }
             )
         }
@@ -89,7 +91,8 @@ class StoreService(
                 StoreResponse.from(
                     store = it,
                     member = globalService.getMember(it.belongTo),
-                    reviews = globalService.getAllReviewsByStoreId(it.id!!)
+                    reviews = globalService.getAllReviews()
+                        .filter { review -> review.store.id == it.id }
                         .map { review -> ReviewResponse.from(review) }
                 )
             }

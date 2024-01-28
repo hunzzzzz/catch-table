@@ -31,8 +31,6 @@ class GlobalService(
 
     fun getAllReviews(): MutableList<Review> = reviewRepository.findAll()
 
-    fun getAllReviewsByStoreId(storeId: Long) = reviewRepository.getAllByStoreId(storeId)
-
     fun getReview(reviewId: Long) =
         reviewRepository.findByIdOrNull(reviewId) ?: throw ModelNotFoundException("리뷰")
 

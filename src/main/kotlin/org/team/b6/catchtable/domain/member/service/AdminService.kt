@@ -33,8 +33,10 @@ class AdminService(
                 StoreResponse.from(
                     store = it,
                     member = globalService.getMember(it.belongTo),
-                    reviews = globalService.getAllReviewsByStoreId(it.id!!)
-                        .map { review -> ReviewResponse.from(review) })
+                    reviews = globalService.getAllReviews()
+                        .filter { review -> review.store.id == it.id }
+                        .map { review -> ReviewResponse.from(review) }
+                )
             }
 
     // ADMIN이 처리해야 하는 리뷰 삭제 요구사항들을 조회
