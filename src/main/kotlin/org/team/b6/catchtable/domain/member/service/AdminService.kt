@@ -39,7 +39,7 @@ class AdminService(
             .map { it.liftSuspension() }
     }
 
-    // ADMIN이 처리해야 하는 요구사항들을 조회
+    // ADMIN이 처리해야 하는 식당 관련 요구사항들을 조회
     fun findAllStoreRequirements() =
         findingEntityService.getAllStores()
             .filter { unavailableToReservation(it.status) }
@@ -157,11 +157,13 @@ class AdminService(
             .filter { review -> review.store.id == storeId }
             .map { review -> reviewRepository.delete(review) }
 
+    // [내부 메서드] 악의성 리뷰를 작성한 USER에게 보내줄 ADMIN 메일의 추가적인 내용
     private fun additionalMailContent(review: Review) = """
         
         
         "작성 일시 : ${review.createdAt},
         "식당 이름 : ${review.store.name},
-        "리뷰 내용 : ${review.content} 
-    """.trimIndent() // TODO : 누적된 경고 횟수도 보내줘야 할듯
+        "리뷰 내용 : ${review.content},
+        "누적 경고 횟수 : ${review.member.numberOfWarnings}
+    """.trimIndent()
 }

@@ -8,7 +8,7 @@ import org.team.b6.catchtable.domain.member.service.AdminService
 
 @RestController
 @RequestMapping("/admins")
-//@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 class AdminController(
     private val adminService: AdminService
 ) {
