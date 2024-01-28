@@ -91,6 +91,6 @@ class ReviewService(
 
     // 리뷰 삭제 요청이 가능한지 확인 (요청의 주체가 리뷰가 달린 식당의 주인인지)
     private fun validateOwner(review: Review, memberId: Long) {
-        if (review.member.id != memberId) throw InvalidRoleException("Require for Delete Review")
+        if (review.store.belongTo != memberId) throw InvalidRoleException("Require for Delete Review")
     }
 }
