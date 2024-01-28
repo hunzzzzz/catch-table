@@ -1,5 +1,6 @@
 package org.team.b6.catchtable.domain.member.service
 
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,6 +31,14 @@ class AdminService(
     private val reviewRepository: ReviewRepository,
     private val blackListRepository: BlackListRepository
 ) {
+    // 계정 정지가 만료된 회원을 10초에 한 번씩 확인
+    @Scheduled(fixedDelay = 1000 * 10)
+    fun liftSuspension(){
+        findingEntityService.getAllMembers()
+            .filter { it.bannedExpiration != null && it.bannedExpiration!! < LocalDateTime.now()}
+            .map { it.liftSuspension() }
+    }
+
     // ADMIN이 처리해야 하는 요구사항들을 조회
     fun findAllStoreRequirements() =
         findingEntityService.getAllStores()
