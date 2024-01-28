@@ -1,5 +1,6 @@
 package org.team.b6.catchtable.domain.reservation.dto
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class ReservationResponse(
@@ -10,4 +11,5 @@ data class ReservationResponse(
     val party: String,
     val createdAt: LocalDateTime,
     val status: String,
+    val date: LocalDate,
 )

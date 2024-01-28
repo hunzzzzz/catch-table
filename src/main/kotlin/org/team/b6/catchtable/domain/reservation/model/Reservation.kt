@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.reservation.dto.ReservationResponse
 import org.team.b6.catchtable.domain.store.model.Store
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity
@@ -29,6 +30,9 @@ class Reservation(
     @Column(name = "status", nullable = false)
     var status: ReservationStatus,
 
+    @Column(name = "date", nullable = false)
+    val date: LocalDate,
+
 //    @Column(name = "deleted", nullable = false)
 //    var deleted: String,
 ) {
@@ -49,6 +53,12 @@ class Reservation(
     fun isCancelled() {
         status = ReservationStatus.Cancelled
     }
+
+    fun checkDate(reservationDate: LocalDate):Boolean{
+        val today= createdAt.toLocalDate()
+
+        return reservationDate.isAfter(today)
+    }
 }
 
 fun Reservation.toResponse(): ReservationResponse {
@@ -60,10 +70,11 @@ fun Reservation.toResponse(): ReservationResponse {
         createdAt = createdAt,
         party = party,
         status = status.name,
-
+        date = date
         )
 }
 
-fun checkTime(time: Int, open: Int, close: Int){
-    if (time !in open until close) throw IllegalArgumentException("영업시간이 아닙니다.")
+fun checkTime(time: Int, open: Int, close: Int):Boolean{
+    return time in open until close
 }
+
