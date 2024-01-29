@@ -1,11 +1,11 @@
-package org.team.b6.catchtable.global.service
+package org.team.b6.catchtable.global.util
 
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 
 @Service
-class UtilService(
+class MailSender(
     private val javaMailSender: JavaMailSender
 ) {
     fun sendMail(email: String, subject: String, text: String) =

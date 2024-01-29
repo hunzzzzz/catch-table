@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import org.team.b6.catchtable.domain.reservation.dto.ReservationRequest
-import org.team.b6.catchtable.domain.reservation.dto.ReservationResponse
+import org.team.b6.catchtable.domain.reservation.dto.request.ReservationRequest
+import org.team.b6.catchtable.domain.reservation.dto.response.ReservationResponse
 import org.team.b6.catchtable.domain.reservation.service.ReservationService
 import org.team.b6.catchtable.global.security.MemberPrincipal
 

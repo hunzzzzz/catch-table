@@ -1,4 +1,4 @@
-package org.team.b6.catchtable.domain.reservation.dto
+package org.team.b6.catchtable.domain.reservation.dto.response
 
 import java.time.LocalDate
 import java.time.LocalDateTime

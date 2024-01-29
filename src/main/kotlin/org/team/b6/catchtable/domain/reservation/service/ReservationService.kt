@@ -1,7 +1,7 @@
 package org.team.b6.catchtable.domain.reservation.service
 
-import org.team.b6.catchtable.domain.reservation.dto.ReservationRequest
-import org.team.b6.catchtable.domain.reservation.dto.ReservationResponse
+import org.team.b6.catchtable.domain.reservation.dto.request.ReservationRequest
+import org.team.b6.catchtable.domain.reservation.dto.response.ReservationResponse
 import org.team.b6.catchtable.global.security.MemberPrincipal
 
 interface ReservationService {

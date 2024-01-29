@@ -29,6 +29,7 @@ class Review(
     val id: Long? = null
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     var status = ReviewStatus.OK
 
     fun update(request: ReviewRequest) {

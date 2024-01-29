@@ -39,7 +39,8 @@ class MemberController(
     @PutMapping("/{memberId}")
     fun updateMember(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
-        @RequestBody updateRequest: UpdateMemberRequest
+        @RequestBody updateRequest: UpdateMemberRequest,
+        @PathVariable memberId: Long
     ): ResponseEntity<MemberResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -75,4 +76,3 @@ class MemberController(
     }
 
 }
-
