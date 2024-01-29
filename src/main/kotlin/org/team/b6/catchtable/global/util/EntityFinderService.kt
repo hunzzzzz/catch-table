@@ -15,7 +15,7 @@ import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.ModelNotFoundException
 
 @Service
-class EntityFinder(
+class EntityFinderService(
     private val memberRepository: MemberRepository,
     private val storeRepository: StoreRepository,
     private val reviewRepository: ReviewRepository,
