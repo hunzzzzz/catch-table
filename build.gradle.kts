@@ -27,6 +27,7 @@ dependencies {
     // DB
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql")
     // MAIL
     implementation("org.springframework.boot:spring-boot-starter-mail:3.2.2")
     // REFLECTION

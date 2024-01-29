@@ -2,8 +2,7 @@ package org.team.b6.catchtable.domain.blacklist.entity
 
 import jakarta.persistence.*
 import org.team.b6.catchtable.domain.member.model.Member
-import org.team.b6.catchtable.domain.member.model.MemberRole
-import org.team.b6.catchtable.global.service.UtilService
+import org.team.b6.catchtable.global.util.MailSender
 import org.team.b6.catchtable.global.variable.Variables
 import java.time.LocalDateTime
 
@@ -22,12 +21,11 @@ class BlackList(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    fun addWarnings(member: Member, utilService: UtilService) {
+    fun addWarnings(member: Member, mailSender: MailSender) {
         member.numberOfWarnings++
         if (member.numberOfWarnings % 3 == 0){
             member.bannedExpiration = LocalDateTime.now().plusDays(7)
-//            member.role = MemberRole.BANNED
-            utilService.sendMail(
+            mailSender.sendMail(
                 email = member.email,
                 subject = Variables.MAIL_SUBJECT_BANNED,
                 text = Variables.MAIL_CONTENT_BANNED

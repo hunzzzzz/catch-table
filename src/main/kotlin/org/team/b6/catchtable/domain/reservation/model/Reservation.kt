@@ -2,7 +2,7 @@ package org.team.b6.catchtable.domain.reservation.model
 
 import jakarta.persistence.*
 import org.team.b6.catchtable.domain.member.model.Member
-import org.team.b6.catchtable.domain.reservation.dto.ReservationResponse
+import org.team.b6.catchtable.domain.reservation.dto.response.ReservationResponse
 import org.team.b6.catchtable.domain.store.model.Store
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -54,9 +54,9 @@ class Reservation(
     }
 
     fun checkDate(reservationDate: LocalDate): Boolean {
-        val today = createdAt.toLocalDate()
+        val today = LocalDate.now()
 
-        return reservationDate.isAfter(today)
+        return reservationDate.isBefore(today)
     }
 }
 

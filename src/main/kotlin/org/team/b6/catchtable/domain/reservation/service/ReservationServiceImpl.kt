@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional
 import org.team.b6.catchtable.domain.member.model.Member
 import org.team.b6.catchtable.domain.member.model.MemberRole
 import org.team.b6.catchtable.domain.member.repository.MemberRepository
-import org.team.b6.catchtable.domain.reservation.dto.ReservationRequest
-import org.team.b6.catchtable.domain.reservation.dto.ReservationResponse
+import org.team.b6.catchtable.domain.reservation.dto.request.ReservationRequest
+import org.team.b6.catchtable.domain.reservation.dto.response.ReservationResponse
 import org.team.b6.catchtable.domain.reservation.model.Reservation
 import org.team.b6.catchtable.domain.reservation.model.ReservationStatus
 import org.team.b6.catchtable.domain.reservation.model.checkTime
@@ -63,6 +63,7 @@ class ReservationServiceImpl(
                 store.closeTime
             )
         ) throw IllegalArgumentException("해당 매장의 영업 시간 내에서 선택해주세요.")
+        validateBannedExpiration(member)
 
         return reservationRepository.save(reservation).toResponse()
     }
@@ -97,7 +98,7 @@ class ReservationServiceImpl(
 
         val timeList = StringBuilder()
 
-// 영업 시간대의 예약 갯수 출력
+        // 영업 시간대의 예약 갯수 출력
         for (i in store.openTime until store.closeTime) {
             val count = timeMap[i] ?: 0
             timeList.append("${i}시: $count 팀\n")

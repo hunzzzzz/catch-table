@@ -1,4 +1,4 @@
-package org.team.b6.catchtable.global.service
+package org.team.b6.catchtable.global.util
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -15,7 +15,7 @@ import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.ModelNotFoundException
 
 @Service
-class FindingEntityService(
+class EntityFinder(
     private val memberRepository: MemberRepository,
     private val storeRepository: StoreRepository,
     private val reviewRepository: ReviewRepository,
