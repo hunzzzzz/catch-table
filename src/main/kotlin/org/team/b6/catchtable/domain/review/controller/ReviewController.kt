@@ -63,7 +63,8 @@ class ReviewController(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
         @PathVariable storeId: Long,
         @PathVariable reviewId: Long
-    ) {
+    ): ResponseEntity<Unit> {
         reviewService.requireForDeleteReview(memberPrincipal, storeId, reviewId)
+        return ResponseEntity.ok().build()
     }
 }

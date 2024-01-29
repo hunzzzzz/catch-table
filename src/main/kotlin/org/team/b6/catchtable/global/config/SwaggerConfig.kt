@@ -1,4 +1,4 @@
-package org.team.b6.catchtable.global.infra.swagger
+package org.team.b6.catchtable.global.config
 
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI

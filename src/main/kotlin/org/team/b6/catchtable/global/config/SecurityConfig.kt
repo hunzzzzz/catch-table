@@ -1,4 +1,4 @@
-package org.team.b6.catchtable.global.security
+package org.team.b6.catchtable.global.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
