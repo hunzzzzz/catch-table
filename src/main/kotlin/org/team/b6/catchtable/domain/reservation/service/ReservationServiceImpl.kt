@@ -17,6 +17,7 @@ import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.BannedUserException
 import org.team.b6.catchtable.global.exception.ModelNotFoundException
 import org.team.b6.catchtable.global.security.MemberPrincipal
+import java.time.LocalDate
 
 @Service
 class ReservationServiceImpl(
@@ -42,6 +43,7 @@ class ReservationServiceImpl(
             status = ReservationStatus.Pending,
             date = request.date,
         )
+
         if (reservation.checkDate(request.date)) throw IllegalArgumentException("당일 예약은 불가능해요.")
         if (!checkTime(
                 request.time,
@@ -83,13 +85,14 @@ class ReservationServiceImpl(
     }
 
     //예약이 승인이 난 것들만 모아서 request에 입력한 날짜에 따라 시간별로 모아서 출력
-    override fun storeReservationListByTime(memberPrincipal: MemberPrincipal, request: ReservationRequest): String {
+    override fun storeReservationListByTime(memberPrincipal: MemberPrincipal, date: LocalDate): String {
         val store = storeRepository.findStoreByBelongTo(memberPrincipal.id) ?: throw ModelNotFoundException("modelName")
-        val reservations = reservationRepository.findAllReservationByStoreAndDate(store, request.date)
-            .filter { it.status == ReservationStatus.Confirmed }
+        val reservations = reservationRepository.findAllReservationByStoreAndDate(store, date)
+
+        val dateReservations=reservations.filter { it.status == ReservationStatus.Confirmed }
 
         // 시간대별로 그룹화하고 예약 수 확인
-        val timeMap = reservations.groupBy { it.time }
+        val timeMap = dateReservations.groupBy { it.time }
             .mapValues { (_, reservations) -> reservations.size }
 
         val timeList = StringBuilder()

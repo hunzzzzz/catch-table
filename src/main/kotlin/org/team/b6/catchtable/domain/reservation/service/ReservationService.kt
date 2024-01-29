@@ -3,6 +3,7 @@ package org.team.b6.catchtable.domain.reservation.service
 import org.team.b6.catchtable.domain.reservation.dto.request.ReservationRequest
 import org.team.b6.catchtable.domain.reservation.dto.response.ReservationResponse
 import org.team.b6.catchtable.global.security.MemberPrincipal
+import java.time.LocalDate
 
 interface ReservationService {
 
@@ -16,7 +17,7 @@ interface ReservationService {
 
     fun storeReservationList(memberPrincipal: MemberPrincipal): List<ReservationResponse>
 
-    fun storeReservationListByTime(memberPrincipal: MemberPrincipal, request: ReservationRequest): String
+    fun storeReservationListByTime(memberPrincipal: MemberPrincipal, date: LocalDate): String
 
     fun cancelReservation(reservationId: Long, memberPrincipal: MemberPrincipal): String
 

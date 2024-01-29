@@ -9,6 +9,7 @@ import org.team.b6.catchtable.domain.reservation.dto.request.ReservationRequest
 import org.team.b6.catchtable.domain.reservation.dto.response.ReservationResponse
 import org.team.b6.catchtable.domain.reservation.service.ReservationService
 import org.team.b6.catchtable.global.security.MemberPrincipal
+import java.time.LocalDate
 
 @RestController
 //@RequestMapping("/reservations")
@@ -47,15 +48,15 @@ class ReservationController(
             .body(reservationService.storeReservationList(memberPrincipal))
     }
 
-    @GetMapping("/members/storeReservations/timeList")
+    @GetMapping("/members/storeReservations/timeList/{date}")
     @PreAuthorize("hasRole('OWNER')")
     fun storeReservationListByTime(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
-        @RequestBody reservationRequest: ReservationRequest
+        @PathVariable date: LocalDate,
     ): ResponseEntity<String> {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(reservationService.storeReservationListByTime(memberPrincipal, reservationRequest))
+            .body(reservationService.storeReservationListByTime(memberPrincipal, date))
     }
 
 
