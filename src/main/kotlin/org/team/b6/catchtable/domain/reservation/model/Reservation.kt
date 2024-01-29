@@ -56,7 +56,7 @@ class Reservation(
     fun checkDate(reservationDate: LocalDate): Boolean {
         val today = LocalDate.now()
 
-        return reservationDate.isBefore(today)
+        return reservationDate.isAfter(today)
     }
 }
 
