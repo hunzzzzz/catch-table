@@ -12,14 +12,14 @@ import org.team.b6.catchtable.domain.store.model.StoreStatus
 import org.team.b6.catchtable.domain.store.repository.StoreRepository
 import org.team.b6.catchtable.global.exception.*
 import org.team.b6.catchtable.global.security.MemberPrincipal
-import org.team.b6.catchtable.global.util.EntityFinder
+import org.team.b6.catchtable.global.util.EntityFinderService
 
 @Service
 @Transactional
 class StoreService(
     private val storeRepository: StoreRepository,
     private val reservationRepository: ReservationRepository,
-    private val entityFinder: EntityFinder
+    private val entityFinderService: EntityFinderService
 ) {
     // 카테고리 별 식당 전체 조회
     fun findAllStoresByCategory(category: String) =
@@ -28,8 +28,8 @@ class StoreService(
             .map {
                 StoreResponse.from(
                     store = it,
-                    member = entityFinder.getMember(it.belongTo),
-                    reviews = entityFinder.getAllReviews()
+                    member = entityFinderService.getMember(it.belongTo),
+                    reviews = entityFinderService.getAllReviews()
                         .filter { review -> review.store.id == it.id }
                         .map { review -> ReviewResponse.from(review) }
                 )
@@ -45,11 +45,11 @@ class StoreService(
 
     // 식당 단일 조회
     fun findStore(storeId: Long) =
-        entityFinder.getStore(storeId).let {
+        entityFinderService.getStore(storeId).let {
             StoreResponse.from(
                 store = it,
-                member = entityFinder.getMember(it.belongTo),
-                reviews = entityFinder.getAllReviews()
+                member = entityFinderService.getMember(it.belongTo),
+                reviews = entityFinderService.getAllReviews()
                     .filter { review -> review.store.id == it.id }
                     .map { review -> ReviewResponse.from(review) }
             )
@@ -64,7 +64,7 @@ class StoreService(
     // 식당 정보 수정
     fun updateStore(storeId: Long, request: StoreRequest) {
         validateDuplicationInUpdate(request.name, request.address, storeId)
-        entityFinder.getStore(storeId)
+        entityFinderService.getStore(storeId)
             .let {
                 validateStoreStatus(it)
                 it.update(request)
@@ -73,7 +73,7 @@ class StoreService(
 
     // 식당 삭제 신청
     fun deleteStore(storeId: Long) =
-        entityFinder.getStore(storeId).updateStatus(StoreStatus.WAITING_FOR_DELETE)
+        entityFinderService.getStore(storeId).updateStatus(StoreStatus.WAITING_FOR_DELETE)
 
     // 카테고리에 대한 유효성 검사
     private fun getCategory(category: String) =
@@ -90,8 +90,8 @@ class StoreService(
             .map {
                 StoreResponse.from(
                     store = it,
-                    member = entityFinder.getMember(it.belongTo),
-                    reviews = entityFinder.getAllReviews()
+                    member = entityFinderService.getMember(it.belongTo),
+                    reviews = entityFinderService.getAllReviews()
                         .filter { review -> review.store.id == it.id }
                         .map { review -> ReviewResponse.from(review) }
                 )
