@@ -34,9 +34,7 @@ class Reservation(
     @Column(name = "date", nullable = false)
     val date: LocalDate,
 
-//    @Column(name = "deleted", nullable = false)
-//    var deleted: String,
-) {
+    ) {
     @Id
     @Column(name = "reservation_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,4 +76,3 @@ fun Reservation.toResponse(): ReservationResponse {
 fun checkTime(time: Int, open: Int, close: Int): Boolean {
     return time in open until close
 }
-

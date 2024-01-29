@@ -44,7 +44,19 @@ class ReservationServiceImpl(
             date = request.date,
         )
 
-        if (reservation.checkDate(request.date)) throw IllegalArgumentException("당일 예약은 불가능해요.")
+//        val cancelCount = reservationRepository.countByMemberAndDateBetweenAndStatus(
+//            member,
+//            reservation.createdAt.minusMonths(1).toLocalDate(),
+//            reservation.createdAt.toLocalDate(),
+//            ReservationStatus.Cancelled
+//        )
+//        if (cancelCount >= 3 && member.bannedExpiration==null) {
+//            val until = LocalDateTime.now().plusMonths(1)
+//            member.bannedExpiration = until
+//            memberRepository.save(member)
+//        }
+//        if (member.bannedExpiration != null) throw BannedUserException(member.bannedExpiration!!)
+        if (!reservation.checkDate(request.date)) throw IllegalArgumentException("당일 예약은 불가능해요.")
         if (!checkTime(
                 request.time,
                 store.openTime,
@@ -54,32 +66,21 @@ class ReservationServiceImpl(
         validateBannedExpiration(member)
 
         return reservationRepository.save(reservation).toResponse()
-//        return reservationRepository.save(
-//            Reservation(
-//                member = member,
-//                time = request.time,
-//                party = request.party,
-//                store = store,
-//                status = ReservationStatus.Pending,
-////                deleted = "0",
-//            )
-//        ).toResponse()
     }
 
     override fun memberReservationList(memberPrincipal: MemberPrincipal): List<ReservationResponse> {
-//        val member= memberRepository.findByIdOrNull(memberPrincipal.id) ?: throw  ModelNotFoundException("modelName")
-        val reservations = reservationRepository.findAllReservationById(memberPrincipal.id)
+        val member = memberRepository.findByIdOrNull(memberPrincipal.id) ?: throw ModelNotFoundException("modelName")
+        val reservation = reservationRepository.findAllByMember(member)
 
-        return reservations.map { it.toResponse() }
+        return reservation.map { it.toResponse() }
     }
 
     override fun storeReservationList(memberPrincipal: MemberPrincipal): List<ReservationResponse> {
         val member = memberRepository.findByIdOrNull(memberPrincipal.id) ?: throw ModelNotFoundException("modelName")
         if (member.role != MemberRole.OWNER) throw IllegalStateException("매장 주인만 이용할 수 있는 기능이에요")
         val store = storeRepository.findStoreByBelongTo(memberPrincipal.id) ?: throw ModelNotFoundException("modelName")
-        val reservations = reservationRepository.findAllReservationById(store.id!!)
+        val reservations = reservationRepository.findAllByStore(store)
 //            .filter { it.status == ReservationStatus.Pending } 예약 승인용으로 쓰려 했으나 취소
-//        val num= 비관적 잠금?
 
         return reservations.map { it.toResponse() }
     }
@@ -89,7 +90,7 @@ class ReservationServiceImpl(
         val store = storeRepository.findStoreByBelongTo(memberPrincipal.id) ?: throw ModelNotFoundException("modelName")
         val reservations = reservationRepository.findAllReservationByStoreAndDate(store, date)
 
-        val dateReservations=reservations.filter { it.status == ReservationStatus.Confirmed }
+        val dateReservations = reservations.filter { it.status == ReservationStatus.Confirmed }
 
         // 시간대별로 그룹화하고 예약 수 확인
         val timeMap = dateReservations.groupBy { it.time }
@@ -153,7 +154,8 @@ class ReservationServiceImpl(
     }
 
     private fun validateBannedExpiration(member: Member) {
-        if (member.bannedExpiration != null)
+        if (member.bannedExpiration != null) {
             throw BannedUserException(member.bannedExpiration!!)
+        }
     }
 }
